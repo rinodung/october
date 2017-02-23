@@ -140,10 +140,8 @@
         // Touch devices use double-tap for the navigation and single tap for selecting.
         // Another option is checkboxes visible only on touch devices, but this approach
         // will require more significant changes in the code for the touch device support.
-        if (!Modernizr.touch)
-            this.$el.on('click.item', '[data-type="media-item"]', this.proxy(this.onItemClick))
-        else 
-            this.$el.on('touchend', '[data-type="media-item"]', this.proxy(this.onItemTouch))
+        this.$el.on('click.item', '[data-type="media-item"]', this.proxy(this.onItemClick))
+        this.$el.on('touchend', '[data-type="media-item"]', this.proxy(this.onItemTouch))
 
         this.$el.on('change', '[data-control="sorting"]', this.proxy(this.onSortingChanged))
         this.$el.on('keyup', '[data-control="search"]', this.proxy(this.onSearchChanged))
@@ -163,10 +161,8 @@
         this.$el.off('click.tree-path', this.proxy(this.onNavigate))
         this.$el.off('click.command', this.proxy(this.onCommandClick))
 
-        if (!Modernizr.touch)
-            this.$el.off('click.item', this.proxy(this.onItemClick))
-        else
-            this.$el.off('touchend', '[data-type="media-item"]', this.proxy(this.onItemTouch))
+        this.$el.off('click.item', this.proxy(this.onItemClick))
+        this.$el.off('touchend', '[data-type="media-item"]', this.proxy(this.onItemTouch))
 
         this.$el.off('change', '[data-control="sorting"]', this.proxy(this.onSortingChanged))
         this.$el.off('keyup', '[data-control="search"]', this.proxy(this.onSearchChanged))
@@ -413,8 +409,8 @@
             }
         } 
         else if ($item.data('item-type') == 'file') {
-            // Trigger the Insert popup command if a file item 
-            // was double clicked.
+            // Trigger the Insert popup command if a file item
+            // was double clicked or Enter key was pressed.
             this.$el.trigger('popupcommand', ['insert'])
         }
     }
@@ -717,11 +713,23 @@
 
         var uploaderOptions = {
             clickable: this.$el.find('[data-control="upload"]').get(0),
-            method: 'POST',
-            url: window.location,
+            url: this.options.url,
             paramName: 'file_data',
+            headers: {},
             createImageThumbnails: false
             // fallback: implement method that would set a flag that the uploader is not supported by the browser
+        }
+
+        if (this.options.uniqueId) {
+            uploaderOptions.headers['X-OCTOBER-FILEUPLOAD'] = this.options.uniqueId
+        }
+
+        /*
+         * Add CSRF token to headers
+         */
+        var token = $('meta[name="csrf-token"]').attr('content')
+        if (token) {
+            uploaderOptions.headers['X-CSRF-TOKEN'] = token
         }
 
         this.dropzone = new Dropzone(this.$el.get(0), uploaderOptions)
@@ -730,6 +738,7 @@
         this.dropzone.on('queuecomplete', this.proxy(this.uploadQueueComplete))
         this.dropzone.on('sending', this.proxy(this.uploadSending))
         this.dropzone.on('error', this.proxy(this.uploadError))
+        this.dropzone.on('success', this.proxy(this.uploadSuccess))
     }
 
     MediaManager.prototype.destroyUploader = function() {
@@ -763,31 +772,25 @@
             messageTemplate = fileNumberLabel.getAttribute('data-message-template'),
             fileNumber = this.dropzone.getUploadingFiles().length + this.dropzone.getQueuedFiles().length
 
-        // Don't confuse users with displaying 100% 
+        // Don't confuse users with displaying 100%
         // until the operation finishes. We consider the operation
-        // finished when the Dropzone's 'compete' event triggers - 
+        // finished when the Dropzone's 'compete' event triggers -
         // when the response is received from the server.
-        if (uploadProgress >= 100)
+        if (uploadProgress >= 100) {
             uploadProgress = 99
+        }
 
         fileNumberLabel.innerHTML = messageTemplate.replace(':number', fileNumber).replace(':percents', Math.round(uploadProgress) + '%')
     }
 
     MediaManager.prototype.setUploadProgress = function(value) {
-        var progresBar = this.$el.get(0).querySelector('[data-control="upload-progress-bar"]')
-        
-        progresBar.setAttribute('style', 'width: ' + value + '%')
-        progresBar.setAttribute('class', 'progress-bar')
+        var progressBar = this.$el.get(0).querySelector('[data-control="upload-progress-bar"]')
+
+        progressBar.setAttribute('style', 'width: ' + value + '%')
+        progressBar.setAttribute('class', 'progress-bar')
     }
 
     MediaManager.prototype.uploadQueueComplete = function() {
-        var fileNumberLabel = this.$el.get(0).querySelector('[data-label="file-number-and-progress"]'),
-            completeTemplate = fileNumberLabel.getAttribute('data-complete-template'),
-            progresBar = this.$el.get(0).querySelector('[data-control="upload-progress-bar"]')
-
-        fileNumberLabel.innerHTML = completeTemplate;
-        progresBar.setAttribute('class', 'progress-bar progress-bar-success')
-
         this.$el.find('[data-command="cancel-uploading"]').addClass('hide')
         this.$el.find('[data-command="close-uploader"]').removeClass('hide')
 
@@ -796,7 +799,6 @@
 
     MediaManager.prototype.uploadSending = function(file, xhr, formData) {
         formData.append('path', this.$el.find('[data-type="current-folder"]').val())
-        formData.append('X_OCTOBER_FILEUPLOAD', this.options.uniqueId)
     }
 
     MediaManager.prototype.uploadCancelAll = function() {
@@ -804,7 +806,21 @@
         this.hideUploadUi()
     }
 
+    MediaManager.prototype.updateUploadBar = function(templateName, classNames) {
+        var fileNumberLabel = this.$el.get(0).querySelector('[data-label="file-number-and-progress"]'),
+            successTemplate = fileNumberLabel.getAttribute('data-' + templateName + '-template'),
+            progressBar = this.$el.get(0).querySelector('[data-control="upload-progress-bar"]')
+
+        fileNumberLabel.innerHTML = successTemplate;
+        progressBar.setAttribute('class', classNames)
+    }
+
+    MediaManager.prototype.uploadSuccess = function() {
+        this.updateUploadBar('success', 'progress-bar progress-bar-success');
+    }
+
     MediaManager.prototype.uploadError = function(file, message) {
+        this.updateUploadBar('error', 'progress-bar progress-bar-danger');
         $.oc.alert('Error uploading file')
     }
 
@@ -909,7 +925,7 @@
             }
 
         $.oc.stripeLoadIndicator.show()
-        this.$form.request(this.options.alias+'::onDelete', {
+        this.$form.request(this.options.alias+'::onDeleteItem', {
             data: data
         }).always(function() {
             $.oc.stripeLoadIndicator.hide()
@@ -936,7 +952,7 @@
         var data = {
                 name: $(ev.target).find('input[name=name]').val(),
                 path: this.$el.find('[data-type="current-folder"]').val()
-            } 
+            }
 
         $.oc.stripeLoadIndicator.show()
         this.$form.request(this.options.alias+'::onCreateFolder', {
@@ -1092,14 +1108,19 @@
     }
 
     MediaManager.prototype.onItemTouch = function(ev) {
-        this.onItemClick(ev)
+        // The 'click' event is triggered after 'touchend', 
+        // so we can prevent handling it.
+        ev.preventDefault() 
+        ev.stopPropagation()
 
         if (this.dblTouchFlag) {
             this.onNavigate(ev)
             this.dblTouchFlag = null
         }
-        else
+        else {
+            this.onItemClick(ev)
             this.dblTouchFlag = true
+        }
 
         this.clearDblTouchTimer()
 
@@ -1244,10 +1265,11 @@
     // ============================
 
     MediaManager.DEFAULTS = {
+        url: window.location,
         alias: '',
         uniqueId: null,
         deleteEmpty: 'Please select files to delete.',
-        deleteConfirm: 'Do you really want to delete the selected file(s)?',
+        deleteConfirm: 'Delete the selected file(s)?',
         moveEmpty: 'Please select files to move.',
         selectSingleImage: 'Please select a single image.',
         selectionNotImage: 'The selected item is not an image.',

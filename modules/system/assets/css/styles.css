@@ -40,7 +40,7 @@ table{border-collapse:collapse;border-spacing:0}
 td,th{padding:0}
 *,*:before,*:after{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}
 html{font-size:62.5%;-webkit-tap-highlight-color:rgba(0,0,0,0)}
-body{font-family:'Open Sans',Arial,sans-serif;font-size:14px;line-height:1.42857143;color:#333333;background-color:#f9f9f9}
+body{font-family:sans-serif;font-size:14px;line-height:1.42857143;color:#333333;background-color:#f9f9f9}
 input,button,select,textarea{font-family:inherit;font-size:inherit;line-height:inherit}
 button,input,select[multiple],textarea{background-image:none}
 a{color:#0181b9;text-decoration:none}
@@ -48,7 +48,7 @@ a:hover,a:focus{color:#001721;text-decoration:underline}
 a:focus{outline:thin dotted;outline:5px auto -webkit-focus-ring-color;outline-offset:-2px}
 img{vertical-align:middle}
 .img-responsive{display:block;max-width:100%;height:auto}
-.img-rounded{border-radius:6px}
+.img-rounded{-webkit-border-radius:6px;-moz-border-radius:6px;border-radius:6px}
 .img-circle{border-radius:50%}
 hr{margin-top:20px;margin-bottom:20px;border:0;border-top:1px solid #eeeeee}
 .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);border:0}
@@ -80,7 +80,8 @@ select{background:#fff !important}
 }
 .container-fluid{margin-right:auto;margin-left:auto;padding-left:15px;padding-right:15px}
 .row{margin-left:-15px;margin-right:-15px}
-.row-compact [class*="col-"]{padding-left:0 !important;padding-right:0 !important}
+.row-flush{margin-left:0;margin-right:0}
+.row-flush [class*="col-"]{padding-left:0 !important;padding-right:0 !important}
 .col-xs-1,.col-sm-1,.col-md-1,.col-lg-1,.col-xs-2,.col-sm-2,.col-md-2,.col-lg-2,.col-xs-3,.col-sm-3,.col-md-3,.col-lg-3,.col-xs-4,.col-sm-4,.col-md-4,.col-lg-4,.col-xs-5,.col-sm-5,.col-md-5,.col-lg-5,.col-xs-6,.col-sm-6,.col-md-6,.col-lg-6,.col-xs-7,.col-sm-7,.col-md-7,.col-lg-7,.col-xs-8,.col-sm-8,.col-md-8,.col-lg-8,.col-xs-9,.col-sm-9,.col-md-9,.col-lg-9,.col-xs-10,.col-sm-10,.col-md-10,.col-lg-10,.col-xs-11,.col-sm-11,.col-md-11,.col-lg-11,.col-xs-12,.col-sm-12,.col-md-12,.col-lg-12{position:relative;min-height:1px;padding-left:15px;padding-right:15px}
 .col-xs-1,.col-xs-2,.col-xs-3,.col-xs-4,.col-xs-5,.col-xs-6,.col-xs-7,.col-xs-8,.col-xs-9,.col-xs-10,.col-xs-11,.col-xs-12{float:left}
 .col-xs-12{width:100%}
@@ -365,8 +366,8 @@ cite{font-style:normal}
 .text-center{text-align:center}
 .text-justify{text-align:justify}
 .text-muted{color:#999999}
-.text-primary{color:#5fb6f5}
-a.text-primary:hover{color:#2fa0f2}
+.text-primary{color:#34495e}
+a.text-primary:hover{color:#222f3d}
 .text-success{color:#3c763d}
 a.text-success:hover{color:#2b542c}
 .text-info{color:#31708f}
@@ -375,8 +376,8 @@ a.text-info:hover{color:#245269}
 a.text-warning:hover{color:#66512c}
 .text-danger{color:#a94442}
 a.text-danger:hover{color:#843534}
-.bg-primary{color:#fff;background-color:#5fb6f5}
-a.bg-primary:hover{background-color:#2fa0f2}
+.bg-primary{color:#fff;background-color:#34495e}
+a.bg-primary:hover{background-color:#222f3d}
 .bg-success{background-color:#dff0d8}
 a.bg-success:hover{background-color:#c1e2b3}
 .bg-info{background-color:#d9edf7}
@@ -792,7 +793,7 @@ address{margin-bottom:20px;font-style:normal;line-height:1.42857143}
 .oc-icon-stumbleupon:before,.icon-stumbleupon:before{content:"\f1a4"}
 .oc-icon-delicious:before,.icon-delicious:before{content:"\f1a5"}
 .oc-icon-digg:before,.icon-digg:before{content:"\f1a6"}
-.oc-icon-pied-piper:before,.icon-pied-piper:before{content:"\f1a7"}
+.oc-icon-pied-piper-pp:before,.icon-pied-piper-pp:before{content:"\f1a7"}
 .oc-icon-pied-piper-alt:before,.icon-pied-piper-alt:before{content:"\f1a8"}
 .oc-icon-drupal:before,.icon-drupal:before{content:"\f1a9"}
 .oc-icon-joomla:before,.icon-joomla:before{content:"\f1aa"}
@@ -830,7 +831,7 @@ address{margin-bottom:20px;font-style:normal;line-height:1.42857143}
 .oc-icon-jsfiddle:before,.icon-jsfiddle:before{content:"\f1cc"}
 .oc-icon-life-bouy:before,.icon-life-bouy:before,.oc-icon-life-buoy:before,.icon-life-buoy:before,.oc-icon-life-saver:before,.icon-life-saver:before,.oc-icon-support:before,.icon-support:before,.oc-icon-life-ring:before,.icon-life-ring:before{content:"\f1cd"}
 .oc-icon-circle-o-notch:before,.icon-circle-o-notch:before{content:"\f1ce"}
-.oc-icon-ra:before,.icon-ra:before,.oc-icon-rebel:before,.icon-rebel:before{content:"\f1d0"}
+.oc-icon-ra:before,.icon-ra:before,.oc-icon-resistance:before,.icon-resistance:before,.oc-icon-rebel:before,.icon-rebel:before{content:"\f1d0"}
 .oc-icon-ge:before,.icon-ge:before,.oc-icon-empire:before,.icon-empire:before{content:"\f1d1"}
 .oc-icon-git-square:before,.icon-git-square:before{content:"\f1d2"}
 .oc-icon-git:before,.icon-git:before{content:"\f1d3"}
@@ -994,6 +995,55 @@ address{margin-bottom:20px;font-style:normal;line-height:1.42857143}
 .oc-icon-vimeo:before,.icon-vimeo:before{content:"\f27d"}
 .oc-icon-black-tie:before,.icon-black-tie:before{content:"\f27e"}
 .oc-icon-fonticons:before,.icon-fonticons:before{content:"\f280"}
+.oc-icon-reddit-alien:before,.icon-reddit-alien:before{content:"\f281"}
+.oc-icon-edge:before,.icon-edge:before{content:"\f282"}
+.oc-icon-credit-card-alt:before,.icon-credit-card-alt:before{content:"\f283"}
+.oc-icon-codiepie:before,.icon-codiepie:before{content:"\f284"}
+.oc-icon-modx:before,.icon-modx:before{content:"\f285"}
+.oc-icon-fort-awesome:before,.icon-fort-awesome:before{content:"\f286"}
+.oc-icon-usb:before,.icon-usb:before{content:"\f287"}
+.oc-icon-product-hunt:before,.icon-product-hunt:before{content:"\f288"}
+.oc-icon-mixcloud:before,.icon-mixcloud:before{content:"\f289"}
+.oc-icon-scribd:before,.icon-scribd:before{content:"\f28a"}
+.oc-icon-pause-circle:before,.icon-pause-circle:before{content:"\f28b"}
+.oc-icon-pause-circle-o:before,.icon-pause-circle-o:before{content:"\f28c"}
+.oc-icon-stop-circle:before,.icon-stop-circle:before{content:"\f28d"}
+.oc-icon-stop-circle-o:before,.icon-stop-circle-o:before{content:"\f28e"}
+.oc-icon-shopping-bag:before,.icon-shopping-bag:before{content:"\f290"}
+.oc-icon-shopping-basket:before,.icon-shopping-basket:before{content:"\f291"}
+.oc-icon-hashtag:before,.icon-hashtag:before{content:"\f292"}
+.oc-icon-bluetooth:before,.icon-bluetooth:before{content:"\f293"}
+.oc-icon-bluetooth-b:before,.icon-bluetooth-b:before{content:"\f294"}
+.oc-icon-percent:before,.icon-percent:before{content:"\f295"}
+.oc-icon-gitlab:before,.icon-gitlab:before{content:"\f296"}
+.oc-icon-wpbeginner:before,.icon-wpbeginner:before{content:"\f297"}
+.oc-icon-wpforms:before,.icon-wpforms:before{content:"\f298"}
+.oc-icon-envira:before,.icon-envira:before{content:"\f299"}
+.oc-icon-universal-access:before,.icon-universal-access:before{content:"\f29a"}
+.oc-icon-wheelchair-alt:before,.icon-wheelchair-alt:before{content:"\f29b"}
+.oc-icon-question-circle-o:before,.icon-question-circle-o:before{content:"\f29c"}
+.oc-icon-blind:before,.icon-blind:before{content:"\f29d"}
+.oc-icon-audio-description:before,.icon-audio-description:before{content:"\f29e"}
+.oc-icon-volume-control-phone:before,.icon-volume-control-phone:before{content:"\f2a0"}
+.oc-icon-braille:before,.icon-braille:before{content:"\f2a1"}
+.oc-icon-assistive-listening-systems:before,.icon-assistive-listening-systems:before{content:"\f2a2"}
+.oc-icon-asl-interpreting:before,.icon-asl-interpreting:before,.oc-icon-american-sign-language-interpreting:before,.icon-american-sign-language-interpreting:before{content:"\f2a3"}
+.oc-icon-deafness:before,.icon-deafness:before,.oc-icon-hard-of-hearing:before,.icon-hard-of-hearing:before,.oc-icon-deaf:before,.icon-deaf:before{content:"\f2a4"}
+.oc-icon-glide:before,.icon-glide:before{content:"\f2a5"}
+.oc-icon-glide-g:before,.icon-glide-g:before{content:"\f2a6"}
+.oc-icon-signing:before,.icon-signing:before,.oc-icon-sign-language:before,.icon-sign-language:before{content:"\f2a7"}
+.oc-icon-low-vision:before,.icon-low-vision:before{content:"\f2a8"}
+.oc-icon-viadeo:before,.icon-viadeo:before{content:"\f2a9"}
+.oc-icon-viadeo-square:before,.icon-viadeo-square:before{content:"\f2aa"}
+.oc-icon-snapchat:before,.icon-snapchat:before{content:"\f2ab"}
+.oc-icon-snapchat-ghost:before,.icon-snapchat-ghost:before{content:"\f2ac"}
+.oc-icon-snapchat-square:before,.icon-snapchat-square:before{content:"\f2ad"}
+.oc-icon-pied-piper:before,.icon-pied-piper:before{content:"\f2ae"}
+.oc-icon-first-order:before,.icon-first-order:before{content:"\f2b0"}
+.oc-icon-yoast:before,.icon-yoast:before{content:"\f2b1"}
+.oc-icon-themeisle:before,.icon-themeisle:before{content:"\f2b2"}
+.oc-icon-google-plus-circle:before,.icon-google-plus-circle:before,.oc-icon-google-plus-official:before,.icon-google-plus-official:before{content:"\f2b3"}
+.oc-icon-fa:before,.icon-fa:before,.oc-icon-font-awesome:before,.icon-font-awesome:before{content:"\f2b4"}
 .close{float:right;font-size:21px;font-weight:bold;line-height:1;color:#000000;text-shadow:0 1px 0 #ffffff;opacity:0.2;filter:alpha(opacity=20)}
 .close:hover,.close:focus{color:#000000;text-decoration:none;cursor:pointer;opacity:0.5;filter:alpha(opacity=50)}
 button.close{padding:0;cursor:pointer;background:transparent;border:0;-webkit-appearance:none}
@@ -1009,22 +1059,8 @@ button.close{padding:0;cursor:pointer;background:transparent;border:0;-webkit-ap
 .icon-3x{font-size:3em}
 .icon-4x{font-size:4em}
 .icon-5x{font-size:5em}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-Light.eot');src:url('../../../backend/assets/font/OpenSans-Light.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-Light.svg#open_sanslight') format('svg'),url('../../../backend/assets/font/OpenSans-Light.woff') format('woff'),url('../../../backend/assets/font/OpenSans-Light.ttf') format('truetype');font-style:normal;font-weight:300}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-Regular.eot');src:url('../../../backend/assets/font/OpenSans-Regular.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-Regular.svg#open_sansregular') format('svg'),url('../../../backend/assets/font/OpenSans-Regular.woff') format('woff'),url('../../../backend/assets/font/OpenSans-Regular.ttf') format('truetype');font-style:normal;font-weight:400}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-Semibold.eot');src:url('../../../backend/assets/font/OpenSans-Semibold.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-Semibold.svg#open_sanssemibold') format('svg'),url('../../../backend/assets/font/OpenSans-Semibold.woff') format('woff'),url('../../../backend/assets/font/OpenSans-Semibold.ttf') format('truetype');font-style:normal;font-weight:600}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-Bold.eot');src:url('../../../backend/assets/font/OpenSans-Bold.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-Bold.svg#open_sansbold') format('svg'),url('../../../backend/assets/font/OpenSans-Bold.woff') format('woff'),url('../../../backend/assets/font/OpenSans-Bold.ttf') format('truetype');font-style:normal;font-weight:700}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-LightItalic.eot');src:url('../../../backend/assets/font/OpenSans-LightItalic.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-LightItalic.svg#open_sanslight_italic') format('svg'),url('../../../backend/assets/font/OpenSans-LightItalic.woff') format('woff'),url('../../../backend/assets/font/OpenSans-LightItalic.ttf') format('truetype');font-style:italic;font-weight:300}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-Italic.eot');src:url('../../../backend/assets/font/OpenSans-Italic.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-Italic.svg#open_sansitalic') format('svg'),url('../../../backend/assets/font/OpenSans-Italic.woff') format('woff'),url('../../../backend/assets/font/OpenSans-Italic.ttf') format('truetype');font-style:italic;font-weight:400}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-SemiboldItalic.eot');src:url('../../../backend/assets/font/OpenSans-SemiboldItalic.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-SemiboldItalic.svg#open_sanssemibold_italic') format('svg'),url('../../../backend/assets/font/OpenSans-SemiboldItalic.woff') format('woff'),url('../../../backend/assets/font/OpenSans-SemiboldItalic.ttf') format('truetype');font-style:italic;font-weight:600}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-Light.eot');src:url('../../../backend/assets/font/OpenSans-Light.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-Light.woff') format('woff'),url('../../../backend/assets/font/OpenSans-Light.svg#open_sanslight') format('svg'),url('../../../backend/assets/font/OpenSans-Light.ttf') format('truetype');font-style:normal;font-weight:300}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-Regular.eot');src:url('../../../backend/assets/font/OpenSans-Regular.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-Regular.woff') format('woff'),url('../../../backend/assets/font/OpenSans-Regular.svg#open_sansregular') format('svg'),url('../../../backend/assets/font/OpenSans-Regular.ttf') format('truetype');font-style:normal;font-weight:400}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-Semibold.eot');src:url('../../../backend/assets/font/OpenSans-Semibold.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-Semibold.woff') format('woff'),url('../../../backend/assets/font/OpenSans-Semibold.svg#open_sanssemibold') format('svg'),url('../../../backend/assets/font/OpenSans-Semibold.ttf') format('truetype');font-style:normal;font-weight:600}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-Bold.eot');src:url('../../../backend/assets/font/OpenSans-Bold.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-Bold.woff') format('woff'),url('../../../backend/assets/font/OpenSans-Bold.svg#open_sansbold') format('svg'),url('../../../backend/assets/font/OpenSans-Bold.ttf') format('truetype');font-style:normal;font-weight:700}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-LightItalic.eot');src:url('../../../backend/assets/font/OpenSans-LightItalic.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-LightItalic.woff') format('woff'),url('../../../backend/assets/font/OpenSans-LightItalic.svg#open_sanslight_italic') format('svg'),url('../../../backend/assets/font/OpenSans-LightItalic.ttf') format('truetype');font-style:italic;font-weight:300}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-Italic.eot');src:url('../../../backend/assets/font/OpenSans-Italic.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-Italic.woff') format('woff'),url('../../../backend/assets/font/OpenSans-Italic.svg#open_sansitalic') format('svg'),url('../../../backend/assets/font/OpenSans-Italic.ttf') format('truetype');font-style:italic;font-weight:400}
-@font-face{font-family:'Open Sans';src:url('../../../backend/assets/font/OpenSans-SemiboldItalic.eot');src:url('../../../backend/assets/font/OpenSans-SemiboldItalic.eot?#iefix') format('embedded-opentype'),url('../../../backend/assets/font/OpenSans-SemiboldItalic.woff') format('woff'),url('../../../backend/assets/font/OpenSans-SemiboldItalic.svg#open_sanssemibold_italic') format('svg'),url('../../../backend/assets/font/OpenSans-SemiboldItalic.ttf') format('truetype');font-style:italic;font-weight:600}
-body{padding-top:20px;font-family:'Open Sans',Arial,sans-serif;background:#f3f3f3;color:#405261}
-h1,h2,h3,h4,h5{font-family:'Open Sans',Arial,sans-serif;text-transform:uppercase}
+body{padding-top:20px;font-family:sans-serif;background:#f3f3f3;color:#405261}
+h1,h2,h3,h4,h5{font-family:sans-serif;text-transform:uppercase}
 h1{font-weight:300;font-size:50px;margin-bottom:15px}
 h1 i[class^="icon-"]:before{font-size:46px}
 i[class^="icon-"].warning{color:#c84530}

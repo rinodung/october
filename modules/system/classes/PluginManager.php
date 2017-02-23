@@ -56,6 +56,11 @@ class PluginManager
     protected $disabledPlugins = [];
 
     /**
+     * @var array Cache of registration method results.
+     */
+    protected $registrationMethodCache = [];
+
+    /**
      * @var boolean Prevent all plugins from registering or booting
      */
     public static $noInit = false;
@@ -66,10 +71,13 @@ class PluginManager
     protected function init()
     {
         $this->bindContainerObjects();
-        $this->metaFile = storage_path() . '/cms/disabled.json';
+        $this->metaFile = storage_path('cms/disabled.json');
         $this->loadDisabled();
         $this->loadPlugins();
-        $this->loadDependencies();
+
+        if ($this->app->runningInBackend()) {
+            $this->loadDependencies();
+        }
     }
 
     /**
@@ -166,12 +174,24 @@ class PluginManager
             $pluginId = $this->getIdentifier($plugin);
         }
 
-        if (!$plugin || $plugin->disabled) {
+        if (!$plugin) {
             return;
         }
 
         $pluginPath = $this->getPluginPath($plugin);
         $pluginNamespace = strtolower($pluginId);
+
+        /*
+         * Register language namespaces
+         */
+        $langPath = $pluginPath . '/lang';
+        if (File::isDirectory($langPath)) {
+            Lang::addNamespace($pluginNamespace, $langPath);
+        }
+
+        if ($plugin->disabled) {
+            return;
+        }
 
         /*
          * Register plugin class autoloaders
@@ -183,14 +203,6 @@ class PluginManager
 
         if (!self::$noInit || $plugin->elevated) {
             $plugin->register();
-        }
-
-        /*
-         * Register language namespaces
-         */
-        $langPath = $pluginPath . '/lang';
-        if (File::isDirectory($langPath)) {
-            Lang::addNamespace($pluginNamespace, $langPath);
         }
 
         /*
@@ -302,6 +314,7 @@ class PluginManager
         }
 
         $classId = $this->getIdentifier($namespace);
+
         return $this->plugins[$classId];
     }
 
@@ -327,6 +340,7 @@ class PluginManager
     public function hasPlugin($namespace)
     {
         $classId = $this->getIdentifier($namespace);
+
         return isset($this->plugins[$classId]);
     }
 
@@ -360,7 +374,9 @@ class PluginManager
             return $plugins;
         }
 
-        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
+        $it = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::FOLLOW_SYMLINKS)
+        );
         $it->setMaxDepth(2);
         $it->rewind();
 
@@ -379,7 +395,7 @@ class PluginManager
     }
 
     /**
-     * Returns a plugin identifier from a Plugin class name or object
+     * Resolves a plugin identifier from a plugin class name or object.
      * @param mixed Plugin class name or object
      * @return string Identifier in format of Vendor.Plugin
      */
@@ -412,6 +428,31 @@ class PluginManager
         return $identifier;
     }
 
+    /**
+     * Spins over every plugin object and collects the results of a method call.
+     * @param  string $methodName
+     * @return array
+     */
+    public function getRegistrationMethodValues($methodName)
+    {
+        if (isset($this->registrationMethodCache[$methodName])) {
+            return $this->registrationMethodCache[$methodName];
+        }
+
+        $results = [];
+        $plugins = $this->getPlugins();
+
+        foreach ($plugins as $id => $plugin) {
+            if (!method_exists($plugin, $methodName)) {
+                continue;
+            }
+
+            $results[$id] = $plugin->{$methodName}();
+        }
+
+        return $this->registrationMethodCache[$methodName] = $results;
+    }
+
     //
     // Disability
     //
@@ -436,7 +477,7 @@ class PluginManager
         }
 
         if (File::exists($path)) {
-            $disabled = json_decode(File::get($path), true);
+            $disabled = json_decode(File::get($path), true) ?: [];
             $this->disabledPlugins = array_merge($this->disabledPlugins, $disabled);
         }
         else {
@@ -452,9 +493,12 @@ class PluginManager
     public function isDisabled($id)
     {
         $code = $this->getIdentifier($id);
+
         if (array_key_exists($code, $this->disabledPlugins)) {
             return true;
         }
+
+        return false;
     }
 
     /**
@@ -462,14 +506,14 @@ class PluginManager
      */
     protected function writeDisabled()
     {
-        $path = $this->metaFile;
-        File::put($path, json_encode($this->disabledPlugins));
+        File::put($this->metaFile, json_encode($this->disabledPlugins));
     }
 
     /**
      * Disables a single plugin in the system.
      * @param string $id Plugin code/namespace
-     * @param bool $user Set to true if disabled by the user
+     * @param bool $isUser Set to true if disabled by the user
+     * @return bool
      */
     public function disablePlugin($id, $isUser = false)
     {
@@ -491,7 +535,8 @@ class PluginManager
     /**
      * Enables a single plugin in the system.
      * @param string $id Plugin code/namespace
-     * @param bool $user Set to true if enabled by the user
+     * @param bool $isUser Set to true if enabled by the user
+     * @return bool
      */
     public function enablePlugin($id, $isUser = false)
     {
@@ -556,11 +601,12 @@ class PluginManager
             }
 
             $disable = false;
+
             foreach ($required as $require) {
-                if (!$this->hasPlugin($require)) {
+                if (!$pluginObj = $this->findByIdentifier($require)) {
                     $disable = true;
                 }
-                elseif (($pluginObj = $this->findByIdentifier($require)) && $pluginObj->disabled) {
+                elseif ($pluginObj->disabled) {
                     $disable = true;
                 }
             }

@@ -3,31 +3,7 @@
 return [
     'app' => [
         'name' => 'مدیریت محتوی اکتبر',
-        'tagline' => 'بازگشت به گذشته',
-    ],
-    'locale' => [
-        'en' => 'انگلیسی',
-        'de' => 'آلمانی',
-        'es' => 'اسپانیایی',
-        'es-ar' => 'اسپانیایی (آرژانتین)',
-        'fa' => 'فارسی',
-        'fr' => 'فرانسوی',
-        'hu' => 'مجارستانی',
-        'id' => 'اندونزیایی',
-        'it' => 'ایتالیایی',
-        'ja' => 'ژاپنی',
-        'lv' => 'لاتوانی',
-        'nb-no' => 'نروژی (Bokmål)',
-        'nl' => 'هلندی',
-        'pl' => 'لهستانی',
-        'pt-br' => 'پرتغالی برزیل',
-        'ro' => 'رومانیایی',
-        'ru' => 'روسی',
-        'sv' => 'سوئدی',
-        'sk' => 'اسلواکی',
-        'tr' => 'ترکی',
-        'zh-cn' => 'چینی',
-        'zh-tw' => 'Chinese (Taiwan)',
+        'tagline' => 'ورود به پنل مدیریت',
     ],
     'directory' => [
         'create_fail' => 'مشکلی در ایجاد پوشه ی :name به وجود آمده است',
@@ -57,6 +33,7 @@ return [
         ]
     ],
     'theme' => [
+        'label' => 'قالب',
         'unnamed' => 'قالب بدون نام',
         'name' => [
             'label' => 'نام قالب',
@@ -72,6 +49,7 @@ return [
         'remove_confirm' => 'آیا از حذف این قالب اطمینان دارید؟',
     ],
     'plugin' => [
+        'label' => 'افزونه',
         'unnamed' => 'افزونه بدون نام',
         'name' => [
             'label' => 'نام افزونه',
@@ -92,6 +70,8 @@ return [
         'refresh' => 'بارگذاری مجدد',
         'disabled_label' => 'غیر فعال',
         'disabled_help' => 'افزونه های غیر فعال توسط برنامه نادیده گرفته می شوند.',
+        'frozen_label' => 'قفل کردن به روز رسانی',
+        'frozen_help' => 'افزونه های قفل شده بهنگام به روز رسانی نادیده گرفته خواهند شد.',
         'selected_amount' => 'افزونه های انتخاب شده: :amount',
         'remove_confirm' => 'آیا از حذف این افزونه اطمینان دارید؟',
         'remove_success' => "افزونه ها با موفقیت از سیستم حذف شدند.",
@@ -125,7 +105,7 @@ return [
         'search' => 'جستجو'
     ],
     'mail' => [
-        'log_file' => 'فایل ثبت وقایع',
+        'log_file' => 'فایل گزارش',
         'menu_label' => 'تنظیمات پست الکترونیکی',
         'menu_description' => 'مدیریت تنظیمات پست الکترونیکی.',
         'general' => 'عمومی',
@@ -141,8 +121,12 @@ return [
         'smtp_password' => 'کلمه عبور',
         'smtp_port' => 'درگاه SMTP',
         'smtp_ssl' => 'اتصال امن SSL مورد نیاز است',
+        'smtp_encryption' => 'پروتکل رمزگذاری SMTP',
+        'smtp_encryption_none' => 'بدون رمزگذاری',
+        'smtp_encryption_tls' => 'TLS',
+        'smtp_encryption_ssl' => 'SSL',
         'sendmail' => 'Sendmail',
-        'sendmail_path' => 'محل Sendmail',
+        'sendmail_path' => 'آدرس برنامه Sendmail',
         'sendmail_path_comment' => 'لطفا محل ذخیره نرم افزار sendmail را مشخص نمایید.',
         'mailgun' => 'Mailgun',
         'mailgun_domain' => 'دامنه ی Mailgun',
@@ -151,7 +135,16 @@ return [
         'mailgun_secret_comment' => 'کلید API ی مربوط به Mailgun را وارد نمایید.',
         'mandrill' => 'Mandrill',
         'mandrill_secret' => 'کلمه عبور Mandrill',
-        'mandrill_secret_comment' => 'کلید API ی Mandrill را وارد نمایید.'
+        'mandrill_secret_comment' => 'کلید API ی Mandrill را وارد نمایید.',
+        'ses' => 'SES',
+        'ses_key' => 'کلید SES',
+        'ses_key_comment' => 'کلید Api SES  را وارد نمایید',
+        'ses_secret' => 'کلمه عبور SES',
+        'ses_secret_comment' => 'کلمه عبور API SES را وارد نمایید',
+        'ses_region' => 'منطفه SES',
+        'ses_region_comment' => 'منطقه خود را برای  SES وارد نمایید (برای مثال: us-east-1)',
+        'drivers_hint_header' => 'درایور ها نصب نشده اند',
+        'drivers_hint_content' => 'این روش برای ارسال پست الکترونیکی به افزونه ":plugin" نیاز دارد. جهت استفاده از این روش لطفا افزونه مورد نیاز را نصب نمایید.'
     ],
     'mail_templates' => [
         'menu_label' => 'قالب های نامه الکترونیکی',
@@ -163,8 +156,9 @@ return [
         'menu_layouts_label' => 'طرح بندی نامه الکترونیکی',
         'layout' => 'طرح بندی',
         'layouts' => 'طرح بندی ها',
+        'no_layout' => '-- بدون طرح بندی --',
         'name' => 'نام',
-        'name_comment' => 'نام یکتای مشخص کننده ی این قالی',
+        'name_comment' => 'نام یکتای مشخص کننده ی این قالب',
         'code' => 'کد',
         'code_comment' => 'کد یکتای مشخص کننده ی این قالب',
         'subject' => 'موضوع',
@@ -175,13 +169,23 @@ return [
         'content_text' => 'متن معمولی',
         'test_send' => 'ارسال پیغام آزمایشی',
         'test_success' => 'پیغام آزمایشی ارسال شد.',
+        'test_confirm' => 'پیغام آزمایشی به آدرس :email ارسال خواهد شد آیا میخواهید ادامه دهید؟',
+        'creating' => 'درحال ایجاد قالب...',
+        'creating_layout' => 'در حال ایجاد طرح بندی...',
+        'saving' => 'ذخیره سازی قالب...',
+        'saving_layout' => 'درحال ذخیره سازی طرح بندی...',
+        'delete_confirm' => 'آیا از حذف این قالب اطمینان دارید؟',
+        'delete_layout_confirm' => 'آیا از حذف این طرح بندی اطمینان دارید؟',
+        'deleting' => 'درحال حذف قالب...',
+        'deleting_layout' => 'در حال حذف طرح بندی...',
+        'sending' => 'ارسال نامه الکترونیکی آزمایشی...',
         'return' => 'بازگشت به لیست قالب ها'
     ],
     'install' => [
         'project_label' => 'ضمیمه کردن به نرم افزار',
         'plugin_label' => 'نصب افزونه',
         'theme_label' => 'نصب قالب',
-        'missing_plugin_name' => 'لطفان نام افزونه را جهت نصب وارد نمایید.',
+        'missing_plugin_name' => 'لطفا نام افزونه را جهت نصب وارد نمایید.',
         'missing_theme_name' => 'لطفا نام قالب را جهت نصب وارد نمایید.',
         'install_completing' => 'مرحله ی پایانی عملیات نصب',
         'install_success' => 'افزونه با موفقیت نصب شد.',
@@ -191,12 +195,15 @@ return [
         'name' => 'بروز رسانی نرم افزار',
         'menu_label' => 'بروز رسانی ها',
         'menu_description' => 'به روز رسانی ی سیستم، مدیریت افزونه ها و قالب های نصب شده.',
+        'return_link' => 'بازگشت به صفحه به روز رسانی ها',
         'check_label' => 'بررسی بروز رسانی',
         'retry_label' => 'تلاش مجدد',
         'plugin_name' => 'نام',
+        'plugin_code' => 'کد یکتا',
         'plugin_description' => 'توضیحات',
         'plugin_version' => 'نسخه',
         'plugin_author' => 'تولید کننده',
+        'plugin_not_found' => 'Plugin not found',
         'core_current_build' => 'نسخه ی کنونی',
         'core_build' => 'نسخه ی :build',
         'core_build_help' => 'به روز رسانی جدید موجود است',
@@ -208,6 +215,7 @@ return [
         'plugin_downloading' => 'دریافت افزونه: :name',
         'plugin_extracting' => 'گشودن افزونه: :name',
         'plugin_version_none' => 'افزونه ی جدید',
+        'plugin_current_version' => 'نسخه کنونی',
         'theme_new_install' => 'قالب جدید نصب شد.',
         'theme_downloading' => 'دریافت قالب: :name',
         'theme_extracting' => 'گشودن قالب: :name',
@@ -218,13 +226,34 @@ return [
         'update_failed_label' => 'بروز رسانی موفق نبود',
         'force_label' => 'اصرار در بروز رسانی',
         'found' => [
-            'label' => 'بروز رسانی جدیدی یافت شده است!',
+            'label' => 'بروز رسانی جدید وجود دارد',
             'help' => 'بر روی بروز رسانی نرم افزار جهت شروع عملیات بروز رسانی کلیک کنید.',
         ],
         'none' => [
             'label' => 'شما از آخرین نسخه استفاده می کنید',
             'help' => 'هیچ به روز رسانی یافت نشد.'
-        ]
+        ],
+        'important_action' => [
+            'empty' => 'اقدام مورد نظر را انتخاب کنید',
+            'confirm' => 'تایید به روز رسانی',
+            'skip' => 'این افزونه را به روز نکن (فقط یک بار)',
+            'ignore' => 'این افزونه را به روز نکن (همیشه)',
+        ],
+        'important_action_required' => 'انتخاب عملیات مورد نیاز است',
+        'important_view_guide' => 'نمایش راهنمای به روز رسانی',
+        'important_alert_text' => 'برخی از به روز رسانی ها به تایید شما نیاز دارند',
+        'details_title' => 'مشخصات افزونه',
+        'details_view_homepage' => 'نمایش صفحه اصلی',
+        'details_readme' => 'مستندات',
+        'details_readme_missing' => 'مستنداتی در دسترس نمی باشد',
+        'details_changelog' => 'تغییرات',
+        'details_changelog_missing' => 'لیست تغییرات موجود نمی باشد.',
+        'details_upgrades' => 'راهنمای به روز رسانی',
+        'details_upgrades_missing' => 'راهنمایی جهت به روز رسانی در دسترس نیست.',
+        'details_licence' => 'گواهی نامه',
+        'details_licence_missing' => 'هیچ گواهی نامه ای موجود نیست.',
+        'details_current_version' => 'نسخه کنونی',
+        'details_author' => 'نویسنده',
     ],
     'server' => [
         'connect_error' => 'خطا در برقراری ارتباط با سرور.',
@@ -257,6 +286,7 @@ return [
         'created_at' => 'ساعت و تاریخ',
         'message' => 'پیغام',
         'level' => 'مرحله',
+        'preview_title' => 'اتفاق'
     ],
     'request_log' => [
         'hint' => 'این گزارش درخواستهایی از طرف مرورگر را که نیاز به بررسی دارند را نمایش می دهد. به عنوان مثال اگر بازدید کنند صفحه ای را که موجود نیست درخواست کند، یک گزینه با کد وضعیت 404 ایجاد می شود.',
@@ -270,8 +300,9 @@ return [
         'id_label' => 'مشخصه ی گزارش',
         'count' => 'شمارشگر',
         'referer' => 'منتقل شده از',
-        'url' => 'آردس',
+        'url' => 'آدرس',
         'status_code' => 'وضعیت',
+        'preview_title' => 'درخواست'
     ],
     'permissions' => [
         'name' => 'سیستم',
@@ -281,9 +312,9 @@ return [
         'manage_mail_templates' => 'مدیریت قالب پست الکترونیکی',
         'manage_mail_settings' => 'مدیریت تنظیمات پست الکترونیکی',
         'manage_other_administrators' => 'مدیریت سایر مدیران',
+        'manage_preferences' => 'مدیریت تنظیمات بخش مدیریت',
+        'manage_editor' => 'مدیریت تنظیمات ویرایشگر کد',
         'view_the_dashboard' => 'نمایش صفحه مدیریت',
         'manage_branding' => 'شخصی سازی قسمت مدیریت'
-    ],
-    'direction' => 'rtl',
-    'calendar' => 'jalali'
+    ]
 ];

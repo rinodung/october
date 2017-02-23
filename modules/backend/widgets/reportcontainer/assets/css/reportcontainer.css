@@ -1,5 +1,5 @@
 .report-container {
-  /**** Isotope CSS3 transitions ****/
+  margin-bottom: 15px;
 }
 .report-container > ul {
   list-style: none;
@@ -123,9 +123,9 @@
   width: 100%;
 }
 .report-container > ul .item.dragged {
-  -webkit-transition-duration: 0!important;
-  -moz-transition-duration: 0!important;
-  transition-duration: 0!important;
+  -webkit-transition-duration: 0s !important;
+  -moz-transition-duration: 0s !important;
+  transition-duration: 0s !important;
   -webkit-transform: translate3d(0, 0, 0) !important;
   transform: translate3d(0, 0, 0) !important;
   position: absolute;
@@ -142,25 +142,30 @@
   right: 30px;
 }
 .report-container > ul.wrapped .item {
-  width: 100%!important;
+  width: 100% !important;
 }
-.report-container .add-widget {
+.report-container .manage-widgets {
   display: inline-block;
   color: #bcc3c7;
   padding: 10px 15px;
   font-size: 14px;
   font-weight: 400;
   border: 1px dashed #bcc3c7;
-  -webkit-border-radius: 2px;
-  -moz-border-radius: 2px;
-  border-radius: 2px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
   margin-left: 5px;
-  margin-bottom: 15px;
 }
-.report-container .add-widget i {
+.report-container .manage-widgets i {
   margin-right: 5px;
 }
-.report-container .add-widget:hover {
+.report-container .manage-widgets:hover {
+  text-decoration: none;
+  background-color: #0181b9;
+  color: white;
+  border: 1px solid #0181b9;
+}
+.report-container .dropdown.open .manage-widgets {
   text-decoration: none;
   background-color: #0181b9;
   color: white;

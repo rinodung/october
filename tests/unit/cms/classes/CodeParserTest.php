@@ -6,14 +6,14 @@ use Cms\Classes\Layout;
 use Cms\Classes\CodeParser;
 use Cms\Classes\Controller;
 
-class CodeParserTest extends TestCase 
+class CodeParserTest extends TestCase
 {
     public static function getProperty($name)
     {
         $class = new ReflectionClass('\Cms\Classes\CodeParser');
         $property = $class->getProperty($name);
         $property->setAccessible(true);
-     
+
         return $property;
     }
 
@@ -95,7 +95,7 @@ class CodeParserTest extends TestCase
          * Test caching - update the file modification time and reset the internal cache. The file should be parsed.
          */
 
-        $this->assertTrue(@touch($layout->getFullPath()));
+        $this->assertTrue(@touch($layout->getFilePath()));
         $layout = Layout::load($theme, 'php-parser-test.htm');
         $this->assertNotEmpty($layout);
         $parser = new CodeParser($layout);
@@ -251,7 +251,36 @@ class CodeParserTest extends TestCase
         $obj = $parser->source($page, null, $controller);
         $this->assertInstanceOf('\Cms\Classes\PageCode', $obj);
 
-        $referenceFilePath = base_path().'/tests/fixtures/cms/reference/namespaces.php';
+        $referenceFilePath = base_path().'/tests/fixtures/cms/reference/namespaces.php.stub';
+        $this->assertFileExists($referenceFilePath);
+        $referenceContents = $this->getContents($referenceFilePath);
+
+        $referenceContents = str_replace('{className}', $info['className'], $referenceContents);
+
+        $this->assertEquals($referenceContents, $this->getContents($info['filePath']));
+    }
+
+    public function testNamespacesAliases()
+    {
+        $theme = Theme::load('test');
+
+        $page = Page::load($theme, 'code-namespaces-aliases.htm');
+        $this->assertNotEmpty($page);
+
+        $parser = new CodeParser($page);
+        $info = $parser->parse();
+
+        $this->assertInternalType('array', $info);
+        $this->assertArrayHasKey('filePath', $info);
+        $this->assertArrayHasKey('className', $info);
+        $this->assertArrayHasKey('source', $info);
+
+        $this->assertFileExists($info['filePath']);
+        $controller = new Controller($theme);
+        $obj = $parser->source($page, null, $controller);
+        $this->assertInstanceOf('\Cms\Classes\PageCode', $obj);
+
+        $referenceFilePath = base_path().'/tests/fixtures/cms/reference/namespaces-aliases.php.stub';
         $this->assertFileExists($referenceFilePath);
         $referenceContents = $this->getContents($referenceFilePath);
 

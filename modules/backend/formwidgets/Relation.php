@@ -1,6 +1,8 @@
 <?php namespace Backend\FormWidgets;
 
+use Db;
 use Lang;
+use Backend\Classes\FormField;
 use Backend\Classes\FormWidgetBase;
 use ApplicationException;
 use SystemException;
@@ -15,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\Relation as RelationBase;
  */
 class Relation extends FormWidgetBase
 {
+    use \Backend\Traits\FormModelWidget;
+
     //
     // Configurable properties
     //
@@ -28,6 +32,11 @@ class Relation extends FormWidgetBase
      * @var string Model column to use for the description reference
      */
     public $descriptionFrom = 'description';
+
+    /**
+     * @var string Custom SQL column selection to use for the name reference
+     */
+    public $sqlSelect;
 
     /**
      * @var string Empty value to use if the relation is singluar (belongsTo)
@@ -58,6 +67,10 @@ class Relation extends FormWidgetBase
             'descriptionFrom',
             'emptyOption',
         ]);
+
+        if (isset($this->config->select)) {
+            $this->sqlSelect = $this->config->select;
+        }
     }
 
     /**
@@ -99,8 +112,6 @@ class Relation extends FormWidgetBase
                 $field->type = 'dropdown';
             }
 
-            $field->placeholder = $this->emptyOption;
-
             // It is safe to assume that if the model and related model are of
             // the exact same class, then it cannot be related to itself
             if ($model->exists && (get_class($model) == get_class($relationModel))) {
@@ -111,13 +122,32 @@ class Relation extends FormWidgetBase
             // by joining its pivot table. Remove all joins from the query.
             $query->getQuery()->getQuery()->joins = [];
 
+            // Determine if the model uses a tree trait
             $treeTraits = ['October\Rain\Database\Traits\NestedTree', 'October\Rain\Database\Traits\SimpleTree'];
-            if (count(array_intersect($treeTraits, class_uses($relationModel))) > 0) {
-                $field->options = $query->listsNested($this->nameFrom, $relationModel->getKeyName());
+            $usesTree = count(array_intersect($treeTraits, class_uses($relationModel))) > 0;
+
+            // The "sqlSelect" config takes precedence over "nameFrom".
+            // A virtual column called "selection" will contain the result.
+            // Tree models must select all columns to return parent columns, etc.
+            if ($this->sqlSelect) {
+                $nameFrom = 'selection';
+                $selectColumn = $usesTree ? '*' : $relationModel->getKeyName();
+                $result = $query->select($selectColumn, Db::raw($this->sqlSelect . ' AS ' . $nameFrom));
             }
             else {
-                $field->options = $query->lists($this->nameFrom, $relationModel->getKeyName());
+                $nameFrom = $this->nameFrom;
+                $result = $query->getQuery()->get();
             }
+
+            // Some simpler relations can specify a custom local or foreign "other" key,
+            // which can be detected and implemented here automagically.
+            $primaryKeyName = in_array($relationType, ['hasMany', 'belongsTo', 'hasOne'])
+                ? $relationObject->getOtherKey()
+                : $relationModel->getKeyName();
+
+            $field->options = $usesTree
+                ? $result->listsNested($nameFrom, $primaryKeyName)
+                : $result->lists($nameFrom, $primaryKeyName);
 
             return $field;
         });
@@ -128,6 +158,10 @@ class Relation extends FormWidgetBase
      */
     public function getSaveValue($value)
     {
+        if ($this->formField->disabled || $this->formField->hidden) {
+            return FormField::NO_SAVE_DATA;
+        }
+
         if (is_string($value) && !strlen($value)) {
             return null;
         }
@@ -138,25 +172,4 @@ class Relation extends FormWidgetBase
 
         return $value;
     }
-
-
-    /**
-     * Returns the value as a relation object from the model,
-     * supports nesting via HTML array.
-     * @return Relation
-     */
-    protected function getRelationObject()
-    {
-        list($model, $attribute) = $this->resolveModelAttribute($this->valueFrom);
-
-        if (!$model->hasRelation($attribute)) {
-            throw new ApplicationException(Lang::get('backend::lang.model.missing_relation', [
-                'class' => get_class($model),
-                'relation' => $attribute
-            ]));
-        }
-
-        return $model->{$attribute}();
-    }
-
 }

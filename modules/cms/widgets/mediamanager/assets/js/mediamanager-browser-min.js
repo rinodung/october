@@ -66,9 +66,7 @@ this.initScroll()}
 MediaManager.prototype.registerHandlers=function(){this.$el.on('dblclick',this.proxy(this.onNavigate))
 this.$el.on('click.tree-path','ul.tree-path, [data-control="sidebar-labels"]',this.proxy(this.onNavigate))
 this.$el.on('click.command','[data-command]',this.proxy(this.onCommandClick))
-if(!Modernizr.touch)
 this.$el.on('click.item','[data-type="media-item"]',this.proxy(this.onItemClick))
-else
 this.$el.on('touchend','[data-type="media-item"]',this.proxy(this.onItemTouch))
 this.$el.on('change','[data-control="sorting"]',this.proxy(this.onSortingChanged))
 this.$el.on('keyup','[data-control="search"]',this.proxy(this.onSearchChanged))
@@ -83,9 +81,7 @@ this.itemListElement.addEventListener('mousedown',this.proxy(this.onListMouseDow
 MediaManager.prototype.unregisterHandlers=function(){this.$el.off('dblclick',this.proxy(this.onNavigate))
 this.$el.off('click.tree-path',this.proxy(this.onNavigate))
 this.$el.off('click.command',this.proxy(this.onCommandClick))
-if(!Modernizr.touch)
 this.$el.off('click.item',this.proxy(this.onItemClick))
-else
 this.$el.off('touchend','[data-type="media-item"]',this.proxy(this.onItemTouch))
 this.$el.off('change','[data-control="sorting"]',this.proxy(this.onSortingChanged))
 this.$el.off('keyup','[data-control="search"]',this.proxy(this.onSearchChanged))
@@ -280,13 +276,17 @@ this.scrollContentElement.insertBefore(this.selectionMarker,this.scrollContentEl
 MediaManager.prototype.doObjectsCollide=function(aTop,aLeft,aWidth,aHeight,bTop,bLeft,bWidth,bHeight){return!(((aTop+aHeight)<(bTop))||(aTop>(bTop+bHeight))||((aLeft+aWidth)<bLeft)||(aLeft>(bLeft+bWidth)))}
 MediaManager.prototype.initUploader=function(){if(!this.itemListElement)
 return
-var uploaderOptions={clickable:this.$el.find('[data-control="upload"]').get(0),method:'POST',url:window.location,paramName:'file_data',createImageThumbnails:false}
+var uploaderOptions={clickable:this.$el.find('[data-control="upload"]').get(0),url:this.options.url,paramName:'file_data',headers:{},createImageThumbnails:false}
+if(this.options.uniqueId){uploaderOptions.headers['X-OCTOBER-FILEUPLOAD']=this.options.uniqueId}
+var token=$('meta[name="csrf-token"]').attr('content')
+if(token){uploaderOptions.headers['X-CSRF-TOKEN']=token}
 this.dropzone=new Dropzone(this.$el.get(0),uploaderOptions)
 this.dropzone.on('addedfile',this.proxy(this.uploadFileAdded))
 this.dropzone.on('totaluploadprogress',this.proxy(this.uploadUpdateTotalProgress))
 this.dropzone.on('queuecomplete',this.proxy(this.uploadQueueComplete))
 this.dropzone.on('sending',this.proxy(this.uploadSending))
-this.dropzone.on('error',this.proxy(this.uploadError))}
+this.dropzone.on('error',this.proxy(this.uploadError))
+this.dropzone.on('success',this.proxy(this.uploadSuccess))}
 MediaManager.prototype.destroyUploader=function(){if(!this.dropzone)
 return
 this.dropzone.destroy()
@@ -299,22 +299,21 @@ MediaManager.prototype.showUploadUi=function(){this.$el.find('[data-control="upl
 MediaManager.prototype.hideUploadUi=function(){this.$el.find('[data-control="upload-ui"]').addClass('hide')}
 MediaManager.prototype.uploadUpdateTotalProgress=function(uploadProgress,totalBytes,totalBytesSent){this.setUploadProgress(uploadProgress)
 var fileNumberLabel=this.$el.get(0).querySelector('[data-label="file-number-and-progress"]'),messageTemplate=fileNumberLabel.getAttribute('data-message-template'),fileNumber=this.dropzone.getUploadingFiles().length+this.dropzone.getQueuedFiles().length
-if(uploadProgress>=100)
-uploadProgress=99
+if(uploadProgress>=100){uploadProgress=99}
 fileNumberLabel.innerHTML=messageTemplate.replace(':number',fileNumber).replace(':percents',Math.round(uploadProgress)+'%')}
-MediaManager.prototype.setUploadProgress=function(value){var progresBar=this.$el.get(0).querySelector('[data-control="upload-progress-bar"]')
-progresBar.setAttribute('style','width: '+value+'%')
-progresBar.setAttribute('class','progress-bar')}
-MediaManager.prototype.uploadQueueComplete=function(){var fileNumberLabel=this.$el.get(0).querySelector('[data-label="file-number-and-progress"]'),completeTemplate=fileNumberLabel.getAttribute('data-complete-template'),progresBar=this.$el.get(0).querySelector('[data-control="upload-progress-bar"]')
-fileNumberLabel.innerHTML=completeTemplate;progresBar.setAttribute('class','progress-bar progress-bar-success')
-this.$el.find('[data-command="cancel-uploading"]').addClass('hide')
+MediaManager.prototype.setUploadProgress=function(value){var progressBar=this.$el.get(0).querySelector('[data-control="upload-progress-bar"]')
+progressBar.setAttribute('style','width: '+value+'%')
+progressBar.setAttribute('class','progress-bar')}
+MediaManager.prototype.uploadQueueComplete=function(){this.$el.find('[data-command="cancel-uploading"]').addClass('hide')
 this.$el.find('[data-command="close-uploader"]').removeClass('hide')
 this.refresh()}
-MediaManager.prototype.uploadSending=function(file,xhr,formData){formData.append('path',this.$el.find('[data-type="current-folder"]').val())
-formData.append('X_OCTOBER_FILEUPLOAD',this.options.uniqueId)}
+MediaManager.prototype.uploadSending=function(file,xhr,formData){formData.append('path',this.$el.find('[data-type="current-folder"]').val())}
 MediaManager.prototype.uploadCancelAll=function(){this.dropzone.removeAllFiles(true)
 this.hideUploadUi()}
-MediaManager.prototype.uploadError=function(file,message){$.oc.alert('Error uploading file')}
+MediaManager.prototype.updateUploadBar=function(templateName,classNames){var fileNumberLabel=this.$el.get(0).querySelector('[data-label="file-number-and-progress"]'),successTemplate=fileNumberLabel.getAttribute('data-'+templateName+'-template'),progressBar=this.$el.get(0).querySelector('[data-control="upload-progress-bar"]')
+fileNumberLabel.innerHTML=successTemplate;progressBar.setAttribute('class',classNames)}
+MediaManager.prototype.uploadSuccess=function(){this.updateUploadBar('success','progress-bar progress-bar-success');}
+MediaManager.prototype.uploadError=function(file,message){this.updateUploadBar('error','progress-bar progress-bar-danger');$.oc.alert('Error uploading file')}
 MediaManager.prototype.cropSelectedImage=function(callback){var selectedItems=this.getSelectedItems(true)
 if(selectedItems.length!=1){alert(this.options.selectSingleImage)
 return}
@@ -346,7 +345,7 @@ var items=this.$el.get(0).querySelectorAll('[data-type="media-item"].selected'),
 for(var i=0,len=items.length;i<len;i++){paths.push({'path':items[i].getAttribute('data-path'),'type':items[i].getAttribute('data-item-type')})}
 var data={paths:paths}
 $.oc.stripeLoadIndicator.show()
-this.$form.request(this.options.alias+'::onDelete',{data:data}).always(function(){$.oc.stripeLoadIndicator.hide()}).done(this.proxy(this.afterNavigate))}
+this.$form.request(this.options.alias+'::onDeleteItem',{data:data}).always(function(){$.oc.stripeLoadIndicator.hide()}).done(this.proxy(this.afterNavigate))}
 MediaManager.prototype.createFolder=function(ev){$(ev.target).popup({content:this.$el.find('[data-control="new-folder-template"]').html(),zIndex:1200})}
 MediaManager.prototype.onFolderPopupShown=function(ev,button,popup){$(popup).find('input[name=name]').focus()
 $(popup).on('submit.media','form',this.proxy(this.onNewFolderSubmit))}
@@ -404,11 +403,12 @@ return false}
 MediaManager.prototype.onItemClick=function(ev){if(ev.target.tagName=='I'&&ev.target.hasAttribute('data-rename-control'))
 return
 this.selectItem(ev.currentTarget,ev.shiftKey)}
-MediaManager.prototype.onItemTouch=function(ev){this.onItemClick(ev)
+MediaManager.prototype.onItemTouch=function(ev){ev.preventDefault()
+ev.stopPropagation()
 if(this.dblTouchFlag){this.onNavigate(ev)
 this.dblTouchFlag=null}
-else
-this.dblTouchFlag=true
+else{this.onItemClick(ev)
+this.dblTouchFlag=true}
 this.clearDblTouchTimer()
 this.dblTouchTimer=setTimeout(this.proxy(this.clearDblTouchFlag),300)}
 MediaManager.prototype.onListMouseDown=function(ev){this.itemListElement.addEventListener('mousemove',this.proxy(this.onListMouseMove))
@@ -462,7 +462,7 @@ eventHandled=true
 break;}
 if(eventHandled){ev.preventDefault()
 ev.stopPropagation()}}
-MediaManager.DEFAULTS={alias:'',uniqueId:null,deleteEmpty:'Please select files to delete.',deleteConfirm:'Do you really want to delete the selected file(s)?',moveEmpty:'Please select files to move.',selectSingleImage:'Please select a single image.',selectionNotImage:'The selected item is not an image.',bottomToolbar:false,cropAndInsertButton:false}
+MediaManager.DEFAULTS={url:window.location,alias:'',uniqueId:null,deleteEmpty:'Please select files to delete.',deleteConfirm:'Delete the selected file(s)?',moveEmpty:'Please select files to move.',selectSingleImage:'Please select a single image.',selectionNotImage:'The selected item is not an image.',bottomToolbar:false,cropAndInsertButton:false}
 var old=$.fn.mediaManager
 $.fn.mediaManager=function(option){var args=Array.prototype.slice.call(arguments,1),result=undefined
 this.each(function(){var $this=$(this)
@@ -616,8 +616,8 @@ MediaManagerImageCropPopup.prototype.undoResizing=function(){this.updateImage(th
 MediaManagerImageCropPopup.prototype.updateSelectionSizeLabel=function(width,height){if(width==0&&height==0){this.selectionSizeLabel.setAttribute('class','hide')
 return}
 this.selectionSizeLabel.setAttribute('class','')
-this.selectionSizeLabel.querySelector('[data-label=selection-width]').textContent=width
-this.selectionSizeLabel.querySelector('[data-label=selection-height]').textContent=height}
+this.selectionSizeLabel.querySelector('[data-label=selection-width]').textContent=parseInt(width)
+this.selectionSizeLabel.querySelector('[data-label=selection-height]').textContent=parseInt(height)}
 MediaManagerImageCropPopup.prototype.onPopupHidden=function(event,element,popup){this.$popupElement.find('form').request(this.options.alias+'::onEndCroppingSession')
 $(document).trigger('mousedown')
 this.dispose()}
@@ -631,7 +631,8 @@ this.selectionSizeLabel=popup.find('[data-label="selection-size"]').get(0)
 this.getWidthInput().on('change',this.proxy(this.onSizeInputChange))
 this.getHeightInput().on('change',this.proxy(this.onSizeInputChange))
 this.initRulers()
-this.initJCrop()}
+this.initJCrop()
+this.applySelectionMode()}
 MediaManagerImageCropPopup.prototype.onSelectionModeChanged=function(){var mode=this.getSelectionMode(),$widthInput=this.getWidthInput(),$heightInput=this.getHeightInput()
 if(mode==='normal'){$widthInput.attr('disabled','disabled')
 $heightInput.attr('disabled','disabled')}

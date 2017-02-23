@@ -1,9 +1,9 @@
 <?php namespace Cms\Classes;
 
 use Str;
-use Illuminate\Container\Container;
 use System\Classes\PluginManager;
 use SystemException;
+use Illuminate\Support\Facades\App;
 
 /**
  * Component manager
@@ -80,6 +80,7 @@ class ComponentManager
      *   });
      * </pre>
      *
+     * @param callable $definitions
      * @return array Array values are class names.
      */
     public function registerComponents(callable $definitions)
@@ -132,7 +133,7 @@ class ComponentManager
         return $this->codeMap;
     }
 
-    /** 
+    /**
      * Returns an array of all component detail definitions.
      * @return array Array keys are component codes, values are the details defined in the component.
      */
@@ -188,7 +189,7 @@ class ComponentManager
 
     /**
      * Makes a component object with properties set.
-     * @param $name A component class name or code.
+     * @param string $name A component class name or code.
      * @param CmsObject $cmsObject The Cms object that spawned this component.
      * @param array $properties The properties set by the Page or Layout.
      * @return ComponentBase The component object.
@@ -198,19 +199,19 @@ class ComponentManager
         $className = $this->resolve($name);
         if (!$className) {
             throw new SystemException(sprintf(
-                'Class name is not registered for the component %s. Check the component plugin.',
+                'Class name is not registered for the component "%s". Check the component plugin.',
                 $name
             ));
         }
 
         if (!class_exists($className)) {
             throw new SystemException(sprintf(
-                'Component class not found %s. Check the component plugin.',
+                'Component class not found "%s". Check the component plugin.',
                 $className
             ));
         }
 
-        $component = new $className($cmsObject, $properties);
+        $component = App::make($className, [$cmsObject, $properties]);
         $component->name = $name;
 
         return $component;

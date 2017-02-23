@@ -2,10 +2,12 @@
 
 use App;
 use File;
+use Twig;
 use View;
 use Model;
 use October\Rain\Mail\MailParser;
 use System\Classes\PluginManager;
+use System\Helpers\View as ViewHelper;
 
 /**
  * Mail template
@@ -84,10 +86,6 @@ class MailTemplate extends Model
         /*
          * Create new templates
          */
-        if (count($newTemplates)) {
-            $categories = MailLayout::lists('id', 'code');
-        }
-
         foreach ($newTemplates as $code => $description) {
             $sections = self::getTemplateSections($code);
             $layoutCode = array_get($sections, 'settings.layout', 'default');
@@ -95,8 +93,8 @@ class MailTemplate extends Model
             $template = self::make();
             $template->code = $code;
             $template->description = $description;
-            $template->is_custom = false;
-            $template->layout_id = isset($categories[$layoutCode]) ? $categories[$layoutCode] : null;
+            $template->is_custom = 0;
+            $template->layout_id = MailLayout::getIdFromCode($layoutCode);
             $template->forceSave();
         }
     }
@@ -104,11 +102,19 @@ class MailTemplate extends Model
     public function afterFetch()
     {
         if (!$this->is_custom) {
-            $sections = self::getTemplateSections($this->code);
-            $this->content_html = $sections['html'];
-            $this->content_text = $sections['text'];
-            $this->subject = array_get($sections, 'settings.subject', 'No subject');
+            $this->fillFromView();
         }
+    }
+
+    public function fillFromView()
+    {
+        $sections = self::getTemplateSections($this->code);
+        $this->content_html = $sections['html'];
+        $this->content_text = $sections['text'];
+        $this->subject = array_get($sections, 'settings.subject', 'No subject');
+
+        $layoutCode = array_get($sections, 'settings.layout', 'default');
+        $this->layout_id = MailLayout::getIdFromCode($layoutCode);
     }
 
     protected static function getTemplateSections($code)
@@ -116,31 +122,48 @@ class MailTemplate extends Model
         return MailParser::parse(File::get(View::make($code)->getPath()));
     }
 
+    public static function findOrMakeTemplate($code)
+    {
+        if (!$template = self::whereCode($code)->first()) {
+            $template = new self;
+            $template->code = $code;
+            $template->fillFromView();
+        }
+
+        return $template;
+    }
+
     public static function addContentToMailer($message, $code, $data)
     {
-        if (!isset(self::$cache[$code])) {
-            if (!$template = self::whereCode($code)->first()) {
-                return false;
-            }
-
-            self::$cache[$code] = $template;
+        if (isset(self::$cache[$code])) {
+            $template = self::$cache[$code];
         }
         else {
-            $template = self::$cache[$code];
+            self::$cache[$code] = $template = self::findOrMakeTemplate($code);
         }
 
         /*
-         * Get Twig to load from a string
+         * Inject global view variables
          */
-        $twig = App::make('twig.string');
-        $message->subject($twig->render($template->subject, $data));
+        $globalVars = ViewHelper::getGlobalVars();
+        if (!empty($globalVars)) {
+            $data = (array) $data + $globalVars;
+        }
+
+        /*
+         * Subject
+         */
+        $customSubject = $message->getSwiftMessage()->getSubject();
+        if (empty($customSubject)) {
+            $message->subject(Twig::parse($template->subject, $data));
+        }
 
         /*
          * HTML contents
          */
-        $html = $twig->render($template->content_html, $data);
+        $html = Twig::parse($template->content_html, $data);
         if ($template->layout) {
-            $html = $twig->render($template->layout->content_html, [
+            $html = Twig::parse($template->layout->content_html, [
                 'content' => $html,
                 'css' => $template->layout->content_css
             ] + (array) $data);
@@ -152,17 +175,15 @@ class MailTemplate extends Model
          * Text contents
          */
         if (strlen($template->content_text)) {
-            $text = $twig->render($template->content_text, $data);
+            $text = Twig::parse($template->content_text, $data);
             if ($template->layout) {
-                $text = $twig->render($template->layout->content_text, [
+                $text = Twig::parse($template->layout->content_text, [
                     'content' => $text
                 ] + (array) $data);
             }
 
             $message->addPart($text, 'text/plain');
         }
-
-        return true;
     }
 
     //

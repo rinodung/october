@@ -2,26 +2,8 @@
 
 return [
     'app' => [
-        'name' => 'October CMS',
-        'tagline' => 'Basitliğe dönüş...'
-    ],
-    'locale' => [
-        'en' => 'English (United States)',
-        'de' => 'Deutsch (Deutschland)',
-        'es' => 'Español (Spanish)',
-        'es-ar' => 'Español (Argentina)',
-        'fa' => '‏فارسی‏ (Iran) ايران',
-        'fr' => 'Français (France)',
-        'hu' => 'Magyar (Magyarország - Hungary)',
-        'it' => 'Italiano (Italia)',
-        'ja' => '日本語 (Japan) 日本',
-        'nl' => 'Nederlands (Nederland)',
-        'pt-br' => 'Português (Brasil)',
-        'ro' => 'Română (România)',
-        'ru' => 'Русский (Россия - Russia)',
-        'sv' => 'Svenska (Sverige)',
-        'tr' => 'Türkçe (Türkiye)',
-        'nb-no' => 'Norwegian (Bokmål)'
+        'name' => 'OctoberCMS',
+        'tagline' => 'Sadeliğe dönüş...'
     ],
     'directory' => [
         'create_fail' => "Klasör oluşturulamıyor: :name"
@@ -50,7 +32,24 @@ return [
             'my_settings' => 'Ayarlarım'
         ]
     ],
+    'theme' => [
+        'label' => 'Tema',
+        'unnamed' => 'İsimsiz tema',
+        'name' => [
+            'label' => 'Tema Adı',
+            'help' => 'Temaya benzersiz bir isim verin. Örn: RainLab.Vanilla'
+        ],
+    ],
+    'themes' => [
+        'install' => 'Temaları yükle',
+        'search' => 'tema ara...',
+        'installed' => 'Yüklü temalar',
+        'no_themes' => 'Mağazadan yüklenmiş bir tema bulunmamaktadır.',
+        'recommended' => 'Tavsiye edilen',
+        'remove_confirm' => 'Bu temayı silmek istediğinize emin misiniz?'
+    ],
     'plugin' => [
+        'label' => 'Eklenti',
         'unnamed' => 'İsimsiz eklenti',
         'name' => [
             'label' => 'Eklenti Adı',
@@ -61,10 +60,18 @@ return [
         'manage' => 'Eklentileri yönet',
         'enable_or_disable' => 'Aktifleştir veya Pasifleştir',
         'enable_or_disable_title' => 'Eklentileri Aktifleştir veya Pasifleştir',
+        'install' => 'Eklentileri yükle',
+        'install_products' => 'Ürünleri yükle',
+        'search' => 'eklenti ara...',
+        'installed' => 'Yüklü eklentiler',
+        'no_plugins' => 'Mağazadan yüklenmiş bir eklenti bulunmamaktadır.',
+        'recommended' => 'Tavsiye edilen',
         'remove' => 'Kaldır',
         'refresh' => 'Yenile',
         'disabled_label' => 'Pasif',
         'disabled_help' => 'Pasifleştirilmiş eklentiler, uygulama tarafından göz ardı edilir.',
+        'frozen_label' => 'Güncelleştirmeleri dondur',
+        'frozen_help' => 'Dondurulmuş eklentiler güncelleme işlemi sırasında görmezden gelinecek ve güncellenmeyecektir.',
         'selected_amount' => 'Seçilen eklentiler: :amount',
         'remove_confirm' => 'Emin misiniz?',
         'remove_success' => 'Eklentiler sistemden başarıyla kaldırıldı.',
@@ -106,7 +113,6 @@ return [
         'sender_name' => 'Gönderici Adı',
         'sender_email' => 'Gönderici Email',
         'php_mail' => 'PHP mail',
-        'sendmail' => 'Sendmail',
         'smtp' => 'SMTP',
         'smtp_address' => 'SMTP Adresi',
         'smtp_authorization' => 'SMTP yetkilendirmesi kullan',
@@ -115,6 +121,10 @@ return [
         'smtp_password' => 'Şifre',
         'smtp_port' => 'SMTP Port',
         'smtp_ssl' => 'SSL bağlantısı kullan',
+        'smtp_encryption' => 'SMTP şifreleme protokolü',
+        'smtp_encryption_none' => 'Şifreleme yok',
+        'smtp_encryption_tls' => 'TLS',
+        'smtp_encryption_ssl' => 'SSL',
         'sendmail' => 'Sendmail',
         'sendmail_path' => 'Sendmail Yolu',
         'sendmail_path_comment' => 'Sendmail programının yolunu belirtin.',
@@ -122,7 +132,19 @@ return [
         'mailgun_domain' => 'Mailgun Domain',
         'mailgun_domain_comment' => 'Mailgun domain belirtin.',
         'mailgun_secret' => 'Mailgun Gizli Anahtarı',
-        'mailgun_secret_comment' => 'Mailgun API anahtarını girin.'
+        'mailgun_secret_comment' => 'Mailgun API anahtarını girin.',
+        'mandrill' => 'Mandrill',
+        'mandrill_secret' => 'Mandrill Gizli Anahtarı',
+        'mandrill_secret_comment' => 'Mandrill API anahtarını girin.',
+        'ses' => 'SES',
+        'ses_key' => 'SES key',
+        'ses_key_comment' => 'SES API keyi girin',
+        'ses_secret' => 'SES secret',
+        'ses_secret_comment' => 'SES API secret keyi girin',
+        'ses_region' => 'SES bölgesi',
+        'ses_region_comment' => 'SES bölgenizi girin (örnek: us-east-1)',
+        'drivers_hint_header' => 'Sürücüler yüklenmemiş',
+        'drivers_hint_content' => 'Bu eposta yöntemiyle eposta gönderebilmeniz için ":plugin" eklentisinin kurulmuş olması gerekir.'
     ],
     'mail_templates' => [
         'menu_label' => 'Mail şablonları',
@@ -134,6 +156,7 @@ return [
         'menu_layouts_label' => 'Mail Layoutları',
         'layout' => 'Layout',
         'layouts' => 'Layoutlar',
+        'no_layout' => '-- Şablon Yok --',
         'name' => 'İsim',
         'name_comment' => 'Bu şablona referans için benzersiz bir isim verin',
         'code' => 'Kod',
@@ -146,12 +169,24 @@ return [
         'content_text' => 'Düzyazı',
         'test_send' => 'Test mesajı gönder',
         'test_success' => 'Test mesajı başarılı şekilde gönderildi.',
+        'test_confirm' => 'Deneme mesajı :email eposta adresine gönderilecek. Devam etmek istiyor musunuz?',
+        'creating' => 'Şablon Oluşturuluyor...',
+        'creating_layout' => 'Layout Oluşturuluyor...',
+        'saving' => 'Şablon kaydediliyor...',
+        'saving_layout' => 'Layout kaydediliyor...',
+        'delete_confirm' => 'Bu şablonu silmek istediğinize emin misiniz?',
+        'delete_layout_confirm' => 'Bu layout\'u silmek istediğinize emin misiniz?',
+        'deleting' => 'Şablon Siliniyor...',
+        'deleting_layout' => 'Layout Siliniyor...',
+        'sending' => 'Deneme mesajı gönderiliyor...',
         'return' => 'Şablon listesine geri dön'
     ],
     'install' => [
         'project_label' => 'Projeye bağla',
         'plugin_label' => 'Eklenti Yükle',
+        'theme_label' => 'Temayı yükle',
         'missing_plugin_name' => 'Yüklemek istediğiniz eklentinin adını giriniz.',
+        'missing_theme_name' => 'Lütfen yüklemek için bir tema ismi giriniz.',
         'install_completing' => 'Kurulumu tamamla',
         'install_success' => 'Eklenti kurulumu tamamlandı.'
     ],
@@ -160,21 +195,27 @@ return [
         'name' => 'Sistemi Güncelle',
         'menu_label' => 'Güncellemeler',
         'menu_description' => 'Sistemi güncelleyin, temaları ve eklentileri yönetin.',
+        'return_link' => 'Sistem güncellemelerine geri dön',
         'check_label' => 'Güncellemeleri kontrol et',
         'retry_label' => 'Tekrar dene',
         'plugin_name' => 'Adı',
+        'plugin_code' => 'Kod',
         'plugin_description' => 'Açıklama',
         'plugin_version' => 'Versiyon',
         'plugin_author' => 'Yazar',
+        'plugin_not_found' => 'Plugin not found',
         'core_current_build' => 'Mevcut versiyon',
         'core_build' => 'Versiyon :build',
         'core_build_help' => 'Son versiyon kullanılabilir.',
         'core_downloading' => 'Uygulama dosyaları indiriliyor',
         'core_extracting' => 'Uygulama dosyaları çıkarılıyor',
         'plugins' => 'Modüller',
+        'themes' => 'Temalar',
+        'disabled' => 'Devre dışı',
         'plugin_downloading' => 'Modül indiriliyor: :name',
         'plugin_extracting' => 'Modül dosyaları çıkarılıyor: :name',
         'plugin_version_none' => 'Yeni eklenti',
+        'plugin_current_version' => 'Mevcut sürüm',
         'theme_new_install' => 'Yeni tema kur.',
         'theme_downloading' => 'Tema indiriliyor: :name',
         'theme_extracting' => 'Tema paketten çıkarılıyor: :name',
@@ -191,7 +232,24 @@ return [
         'none' => [
             'label' => 'Güncelleme yok',
             'help' => 'Yeni güncelleme bulunamadı.'
-        ]
+        ],
+        'important_action' => [
+            'empty' => 'Eylem seçin',
+            'confirm' => 'Güncellemeyi onayla',
+            'skip' => 'Eklentiyi geç (tek seferlik)',
+            'ignore' => 'Eklentiyi geç (her zaman)',
+        ],
+        'important_action_required' => 'Eylem gerekli',
+        'important_view_guide' => 'Yükseltme kılavuzuna göz atın',
+        'important_alert_text' => 'Bazı eklentiler işlem gerektirebilir.',
+        'details_title' => 'Eklenti detayları',
+        'details_view_homepage' => 'Anasayfa',
+        'details_readme' => 'Kılavuz',
+        'details_readme_missing' => 'Herhangi bir kılavuz bulunamadı.',
+        'details_upgrades' => 'Yükseltme Kılavuzu',
+        'details_upgrades_missing' => 'Yükseltme talimatı bulunamadı.',
+        'details_current_version' => 'Mevcut sürüm',
+        'details_author' => 'Yazar',
     ],
     'server' => [
         'connect_error' => 'Sunucuyla bağlantı kurulamadı.',
@@ -223,7 +281,8 @@ return [
         'id_label' => 'Olay Numarası',
         'created_at' => 'Tarih & Saat',
         'message' => 'Mesaj',
-        'level' => 'Seviye'
+        'level' => 'Seviye',
+        'preview_title' => 'Olay'
     ],
     'request_log' => [
         'hint' => 'Bu günlük dikkat edilmesi gereken tarayıcı isteklerinin bir listesini görüntüler. Örneğin, bir ziyaretçi bulunmayan bir CMS sayfasını açarsa 404 kodu ile bir kayıt oluşturulur.',
@@ -238,15 +297,20 @@ return [
         'count' => 'Sayaç',
         'referer' => 'Referer',
         'url' => 'URL',
-        'status_code' => 'Durum'
+        'status_code' => 'Durum',
+        'preview_title' => 'İstek'
     ],
     'permissions' => [
         'name' => 'Sistem',
-        'manage_system_settings' => 'Sistem ayarlarını düzenleyebilsin',
-        'manage_software_updates' => 'Sistem güncellemelerini yönetebilsin',
-        'manage_mail_templates' => 'E-posta şablonları yönetebilsin',
-        'manage_mail_settings' => 'E-posta ayarlarını yönetebilsin',
-        'manage_other_administrators' => 'Diğer yöneticileri düzenleyebilsin',
-        'view_the_dashboard' => 'Panoyu görüntüleyebilsin'
+        'manage_system_settings' => 'Sistem ayarlarını düzenleyebilir',
+        'manage_software_updates' => 'Sistem güncellemelerini yönetebilir',
+        'access_logs' => 'Sistem günlüğünü görüntüleyebilir',
+        'manage_mail_templates' => 'E-posta şablonları yönetebilir',
+        'manage_mail_settings' => 'E-posta ayarlarını yönetebilir',
+        'manage_other_administrators' => 'Diğer yöneticileri düzenleyebilir',
+        'manage_preferences' => 'Yönetim paneli seçeneklerini düzenleyebilir',
+        'manage_editor' => 'Kod editör ayarlarını düzenleyebilir',
+        'view_the_dashboard' => 'Panoyu görüntüleyebilir',
+        'manage_branding' => 'Yönetim Panelini özelleştirebilsin'
     ]
 ];

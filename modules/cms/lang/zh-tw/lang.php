@@ -12,6 +12,12 @@ return [
         'delete_success' => '模板成功刪除: :count.',
         'file_name_required' => '需要檔案名字串.'
     ],
+    'dashboard' => [
+        'active_theme' => [
+            'online' => '在線',
+            'maintenance' => '維護中',
+        ]
+    ],
     'theme' => [
         'not_found_name' => "主題 ':name' 沒找到.",
         'active' => [
@@ -262,7 +268,6 @@ return [
         'uploading_file_num' => '上傳 :number 檔案...',
         'uploading_complete' => '上傳完畢',
         'order_by' => '排序',
-        'search' => '搜尋',
         'folder' => '檔案夾',
         'no_files_found' => '沒找到您請求的檔案.',
         'delete_empty' => '請選擇刪除項.',

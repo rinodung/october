@@ -1,5 +1,6 @@
 <?php namespace System\Controllers;
 
+use App;
 use Str;
 use Lang;
 use File;
@@ -40,7 +41,12 @@ class EventLogs extends Controller
         SettingsManager::setContext('October.System', 'event_logs');
     }
 
-    public function onEmptyLog()
+    public function index_onRefresh()
+    {
+        return $this->listRefresh();
+    }
+
+    public function index_onEmptyLog()
     {
         EventLog::truncate();
         Flash::success(Lang::get('system::lang.event_log.empty_success'));
@@ -63,5 +69,18 @@ class EventLogs extends Controller
         }
 
         return $this->listRefresh();
+    }
+
+
+    public function preview($id)
+    {
+        $this->addCss('/modules/system/assets/css/eventlogs/exception-beautifier.css', 'core');
+        $this->addJs('/modules/system/assets/js/eventlogs/exception-beautifier.js', 'core');
+
+        if (in_array(App::environment(), ['dev', 'local'])) {
+            $this->addJs('/modules/system/assets/js/eventlogs/exception-beautifier.links.js', 'core');
+        }
+
+        return $this->asExtension('FormController')->preview($id);
     }
 }

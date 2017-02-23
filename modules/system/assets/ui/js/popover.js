@@ -97,6 +97,7 @@
         $(document).off('.oc.popover')
 
         this.docClickHandler = null
+        this.options.onCheckDocumentClickTarget = null
     }
 
     Popover.prototype.show = function(options) {
@@ -146,14 +147,7 @@
         /*
          * Determine the popover position
          */
-        var
-            placement = this.calcPlacement(),
-            position = this.calcPosition(placement)
-
-        this.$container.css({
-            left: position.x,
-            top: position.y
-        }).addClass('placement-'+placement)
+        this.reposition()
 
         /*
          * Display the popover
@@ -185,12 +179,29 @@
                if ($(e.target).hasClass('select2-offscreen'))
                    return false
 
+               if (!self.options.closeOnEsc) { // The value of the option could be changed after the popover is displayed
+                   return false
+               }
+
                if (e.keyCode == 27) {
                    self.hide()
                    return false
                }
             })
         }
+    }
+
+    Popover.prototype.reposition = function() {
+        var
+            placement = this.calcPlacement(),
+            position = this.calcPosition(placement)
+
+        this.$container.removeClass('placement-center placement-bottom placement-top placement-left placement-right')
+
+        this.$container.css({
+            left: position.x,
+            top: position.y
+        }).addClass('placement-'+placement)
     }
 
     Popover.prototype.getContent = function () {
@@ -320,6 +331,10 @@
         if (!this.options.closeOnPageClick)
             return
 
+        if (this.options.onCheckDocumentClickTarget && this.options.onCheckDocumentClickTarget(e.target)) {
+            return
+        }
+
         if ($.contains(this.$container.get(0), e.target))
             return
 
@@ -338,7 +353,8 @@
         container: false,
         containerClass: null,
         offset: 15,
-        useAnimation: false
+        useAnimation: false,
+        onCheckDocumentClickTarget: null
     }
 
     // POPOVER PLUGIN DEFINITION
@@ -370,7 +386,7 @@
                 data[option].apply(data, methodArgs)
             }
         })
-      }
+    }
 
     $.fn.ocPopover.Constructor = Popover
 

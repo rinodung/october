@@ -1,6 +1,7 @@
 <?php namespace Cms\Widgets;
 
 use Str;
+use File;
 use Input;
 use Request;
 use Response;
@@ -16,6 +17,10 @@ use Backend\Classes\WidgetBase;
  */
 class TemplateList extends WidgetBase
 {
+    const SORTING_FILENAME = 'fileName';
+
+    use \Backend\Traits\SelectableWidget;
+
     protected $searchTerm = false;
 
     protected $dataSource;
@@ -23,8 +28,6 @@ class TemplateList extends WidgetBase
     protected $theme;
 
     protected $groupStatusCache = false;
-
-    protected $selectedTemplatesCache = false;
 
     /**
      * @var string object property to use as a title.
@@ -46,12 +49,12 @@ class TemplateList extends WidgetBase
     /**
      * @var string Message to display when there are no records in the list.
      */
-    public $noRecordsMessage = 'No records found';
+    public $noRecordsMessage = 'cms::lang.template.no_list_records';
 
     /**
      * @var string Message to display when the Delete button is clicked.
      */
-    public $deleteConfirmation = 'Do you really want to delete selected templates?';
+    public $deleteConfirmation = 'cms::lang.template.delete_confirm';
 
     /**
      * @var string Specifies the item type.
@@ -64,9 +67,15 @@ class TemplateList extends WidgetBase
     public $controlClass = null;
 
     /**
-     * @var string A list of directories to suppress / hide.
+     * @var string A list of file name patterns to suppress / hide.
      */
-    public $suppressDirectories = [];
+    public $ignoreDirectories = [];
+
+    /**
+     * @var boolean Defines sorting properties. 
+     * The sorting feature is disabled if there are no sorting properties defined.
+     */
+    public $sortingProperties = [];
 
     /*
      * Public methods
@@ -77,6 +86,7 @@ class TemplateList extends WidgetBase
         $this->alias = $alias;
         $this->dataSource = $dataSource;
         $this->theme = Theme::getEditTheme();
+        $this->selectionInputName = 'template';
 
         parent::__construct($controller, []);
 
@@ -102,8 +112,12 @@ class TemplateList extends WidgetBase
      */
     public function render()
     {
+        $toolbarClass = Str::contains($this->controlClass, 'hero') ? 'separator' : null;
+
+        $this->vars['toolbarClass'] = $toolbarClass;
+
         return $this->makePartial('body', [
-            'data'=>$this->getData()
+            'data' => $this->getData()
         ]);
     }
 
@@ -124,11 +138,6 @@ class TemplateList extends WidgetBase
         $this->setGroupStatus(Input::get('group'), Input::get('status'));
     }
 
-    public function onSelect()
-    {
-        $this->extendSelection();
-    }
-
     public function onUpdate()
     {
         $this->extendSelection();
@@ -136,9 +145,20 @@ class TemplateList extends WidgetBase
         return $this->updateList();
     }
 
+    public function onApplySorting()
+    {
+        $this->setSortingProperty(Input::get('sortProperty'));
+
+        $result = $this->updateList();
+        $result['#'.$this->getId('sorting-options')] = $this->makePartial('sorting-options');
+
+        return $result;
+    }
+
     //
     // Methods for the internal use
     //
+
     protected function getData()
     {
         /*
@@ -146,23 +166,15 @@ class TemplateList extends WidgetBase
          */
         $items = call_user_func($this->dataSource);
 
-        $normalizedItems = [];
-        foreach ($items as $item) {
-            if ($this->suppressDirectories) {
-                $fileName = $item->getBaseFileName();
-                $dir = dirname($fileName);
-
-                if (in_array($dir, $this->suppressDirectories)) {
-                    continue;
-                }
-            }
-
-            $normalizedItems[] = $this->normalizeItem($item);
+        if ($items instanceof \October\Rain\Support\Collection) {
+            $items = $items->all();
         }
 
-        usort($normalizedItems, function ($a, $b) {
-            return strcmp($a->fileName, $b->fileName);
-        });
+        $items = $this->removeIgnoredDirectories($items);
+
+        $items = array_map([$this, 'normalizeItem'], $items);
+
+        $this->sortItems($items);
 
         /*
          * Apply the search
@@ -174,10 +186,10 @@ class TemplateList extends WidgetBase
             /*
              * Exact
              */
-            foreach ($normalizedItems as $index => $item) {
+            foreach ($items as $index => $item) {
                 if ($this->itemContainsWord($searchTerm, $item, true)) {
                     $filteredItems[] = $item;
-                    unset($normalizedItems[$index]);
+                    unset($items[$index]);
                 }
             }
 
@@ -185,14 +197,14 @@ class TemplateList extends WidgetBase
              * Fuzzy
              */
             $words = explode(' ', $searchTerm);
-            foreach ($normalizedItems as $item) {
+            foreach ($items as $item) {
                 if ($this->itemMatchesSearch($words, $item)) {
                     $filteredItems[] = $item;
                 }
             }
         }
         else {
-            $filteredItems = $normalizedItems;
+            $filteredItems = $items;
         }
 
         /*
@@ -221,11 +233,53 @@ class TemplateList extends WidgetBase
             }
         }
 
+        // Sort folders by name regardless of the 
+        // selected sorting options.
+        ksort($foundGroups);
+
         foreach ($foundGroups as $group) {
             $result[] = $group;
         }
 
         return $result;
+    }
+
+    protected function sortItems(&$items)
+    {
+        $sortingProperty = $this->getSortingProperty();
+
+        usort($items, function ($a, $b) use ($sortingProperty) {
+            return strcmp($a->$sortingProperty, $b->$sortingProperty);
+        });
+    }
+
+    protected function removeIgnoredDirectories($items)
+    {
+        if (!$this->ignoreDirectories) {
+            return $items;
+        }
+
+        $ignoreCache = [];
+
+        $items = array_filter($items, function($item) use (&$ignoreCache) {
+            $fileName = $item->getBaseFileName();
+            $dirName = dirname($fileName);
+
+            if (isset($ignoreCache[$dirName])) {
+                return false;
+            }
+
+            foreach ($this->ignoreDirectories as $ignoreDir) {
+                if (File::fileNameMatch($dirName, $ignoreDir)) {
+                    $ignoreCache[$dirName] = true;
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        return $items;
     }
 
     protected function normalizeItem($item)
@@ -248,6 +302,10 @@ class TemplateList extends WidgetBase
             'description'  => $description,
             'descriptions' => $descriptions
         ];
+
+        foreach ($this->sortingProperties as $property=>$name) {
+            $result[$property] = $item->$property;
+        }
 
         return (object) $result;
     }
@@ -276,7 +334,9 @@ class TemplateList extends WidgetBase
 
     protected function updateList()
     {
-        return ['#'.$this->getId('template-list') => $this->makePartial('items', ['items'=>$this->getData()])];
+        return [
+            '#'.$this->getId('template-list') => $this->makePartial('items', ['items' => $this->getData()])
+        ];
     }
 
     protected function itemMatchesSearch($words, $item)
@@ -295,7 +355,7 @@ class TemplateList extends WidgetBase
         return true;
     }
 
-    protected function itemContainsWord($word, $item , $exact = false)
+    protected function itemContainsWord($word, $item, $exact = false)
     {
         $operator = $exact ? 'is' : 'contains';
 
@@ -304,7 +364,8 @@ class TemplateList extends WidgetBase
                 return true;
             }
         }
-        elseif (Str::$operator(Str::lower($item->fileName), $word)) {
+
+        if (Str::$operator(Str::lower($item->fileName), $word)) {
             return true;
         }
 
@@ -358,40 +419,19 @@ class TemplateList extends WidgetBase
         $this->putSession($this->getThemeSessionKey('groups'), $statuses);
     }
 
-    protected function getSelectedTemplates()
+    protected function getSortingProperty()
     {
-        if ($this->selectedTemplatesCache !== false) {
-            return $this->selectedTemplatesCache;
+        $property = $this->getSession($this->getThemeSessionKey('sorting_property'), self::SORTING_FILENAME);
+
+        if (!array_key_exists($property, $this->sortingProperties)) {
+            return self::SORTING_FILENAME;
         }
 
-        $templates = $this->getSession($this->getThemeSessionKey('selected'), []);
-        if (!is_array($templates)) {
-            return $this->selectedTemplatesCache = [];
-        }
-
-        return $this->selectedTemplatesCache = $templates;
+        return $property;
     }
 
-    protected function extendSelection()
+    protected function setSortingProperty($property)
     {
-        $items = Input::get('template', []);
-        $currentSelection = $this->getSelectedTemplates();
-
-        $this->putSession($this->getThemeSessionKey('selected'), array_merge($currentSelection, $items));
-    }
-
-    protected function resetSelection()
-    {
-        $this->putSession($this->getThemeSessionKey('selected'), []);
-    }
-
-    protected function isTemplateSelected($item)
-    {
-        $selectedTemplates = $this->getSelectedTemplates();
-        if (!is_array($selectedTemplates) || !isset($selectedTemplates[$item->fileName])) {
-            return false;
-        }
-
-        return $selectedTemplates[$item->fileName];
+        $this->putSession($this->getThemeSessionKey('sorting_property'), $property);
     }
 }

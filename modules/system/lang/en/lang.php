@@ -2,33 +2,41 @@
 
 return [
     'app' => [
-        'name' => 'October CMS',
+        'name' => 'OctoberCMS',
         'tagline' => 'Getting back to basics'
     ],
     'locale' => [
-        'en' => 'English',
-        'de' => 'German',
-        'el' => 'Greek',
-        'es' => 'Spanish',
-        'es-ar' => 'Spanish (Argentina)',
-        'fa' => 'Persian',
-        'fr' => 'French',
-        'hu' => 'Hungarian',
+        'be' => 'Беларуская',
+        'bg' => 'Български',
+        'cs' => 'Čeština',
+        'da' => 'Dansk',
+        'en' => 'English (United States)',
+        'en-au' => 'English (Australia)',
+        'en-ca' => 'English (Canada)',
+        'en-gb' => 'English (United Kingdom)',
+        'de' => 'Deutsche',
+        'el' => 'Ελληνικά',
+        'es' => 'Español',
+        'es-ar' => 'Español (Argentina)',
+        'fa' => 'فارسی',
+        'fr' => 'Français',
+        'fr-ca' => 'Français (Canada)',
+        'hu' => 'Magyar',
         'id' => 'Bahasa Indonesia',
-        'it' => 'Italian',
-        'ja' => 'Japanese',
-        'lv' => 'Latvian',
-        'nb-no' => 'Norwegian (Bokmål)',
-        'nl' => 'Dutch',
-        'pl' => 'Polish',
-        'pt-br' => 'Portuguese (Brazil)',
-        'ro' => 'Romanian',
-        'ru' => 'Russian',
-        'sv' => 'Swedish',
-        'sk' => 'Slovak (Slovakia)',
-        'tr' => 'Turkish',
-        'zh-cn' => 'Chinese (China)',
-        'zh-tw' => 'Chinese (Taiwan)'
+        'it' => 'Italiano',
+        'ja' => '日本語',
+        'lv' => 'Latvijas',
+        'nb-no' => 'Norsk (Bokmål)',
+        'nl' => 'Nederlands',
+        'pl' => 'Polskie',
+        'pt-br' => 'Português (Brasil)',
+        'ro' => 'Română',
+        'ru' => 'Русский',
+        'sv' => 'Svenska',
+        'sk' => 'Slovenský',
+        'tr' => 'Türk',
+        'zh-cn' => '简体中文',
+        'zh-tw' => '繁體中文'
     ],
     'directory' => [
         'create_fail' => 'Cannot create directory: :name'
@@ -119,13 +127,13 @@ return [
             'missing' => 'Please specify a Project ID to use.'
         ],
         'detach_confirm' => 'Are you sure you want to detach this project?',
-        'unbind_success' => 'Project has been detached successfully.'
+        'unbind_success' => 'Project has been detached.'
     ],
     'settings' => [
         'menu_label' => 'Settings',
         'not_found' => 'Unable to find the specified settings.',
         'missing_model' => 'The settings page is missing a Model definition.',
-        'update_success' => 'Settings for :name have been updated successfully.',
+        'update_success' => ':name settings updated',
         'return' => 'Return to system settings',
         'search' => 'Search'
     ],
@@ -161,6 +169,13 @@ return [
         'mandrill' => 'Mandrill',
         'mandrill_secret' => 'Mandrill secret',
         'mandrill_secret_comment' => 'Enter your Mandrill API key.',
+        'ses' => 'SES',
+        'ses_key' => 'SES key',
+        'ses_key_comment' => 'Enter your SES API key',
+        'ses_secret' => 'SES secret',
+        'ses_secret_comment' => 'Enter your SES API secret key',
+        'ses_region' => 'SES region',
+        'ses_region_comment' => 'Enter your SES region (e.g. us-east-1)',
         'drivers_hint_header' => 'Drivers not installed',
         'drivers_hint_content' => 'This mail method requires the plugin ":plugin" be installed before you can send mail.'
     ],
@@ -186,11 +201,18 @@ return [
         'content_css' => 'CSS',
         'content_text' => 'Plaintext',
         'test_send' => 'Send test message',
-        'test_success' => 'The test message has been successfully sent.',
-        'return' => 'Return to template list',
-        'test_confirm' => 'A test message will be sent to :email. Continue?',
+        'test_success' => 'Test message sent.',
+        'test_confirm' => 'Send test message to :email. Continue?',
+        'creating' => 'Creating Template...',
+        'creating_layout' => 'Creating Layout...',
         'saving' => 'Saving Template...',
+        'saving_layout' => 'Saving Layout...',
+        'delete_confirm' => 'Delete this template?',
+        'delete_layout_confirm' => 'Delete this layout?',
+        'deleting' => 'Deleting Template...',
+        'deleting_layout' => 'Deleting Layout...',
         'sending' => 'Sending test message...',
+        'return' => 'Return to template list'
     ],
     'install' => [
         'project_label' => 'Attach to Project',
@@ -199,12 +221,12 @@ return [
         'missing_plugin_name' => 'Please specify a Plugin name to install.',
         'missing_theme_name' => 'Please specify a Theme name to install.',
         'install_completing' => 'Finishing installation process',
-        'install_success' => 'The plugin has been installed successfully.'
+        'install_success' => 'Plugin installed successfully'
     ],
     'updates' => [
         'title' => 'Manage Updates',
         'name' => 'Software update',
-        'menu_label' => 'Updates',
+        'menu_label' => 'Updates & Plugins',
         'menu_description' => 'Update the system, manage and install plugins and themes.',
         'return_link' => 'Return to system updates',
         'check_label' => 'Check for updates',
@@ -214,6 +236,7 @@ return [
         'plugin_description' => 'Description',
         'plugin_version' => 'Version',
         'plugin_author' => 'Author',
+        'plugin_not_found' => 'Plugin not found',
         'core_current_build' => 'Current build',
         'core_build' => 'Build :build',
         'core_build_help' => 'Latest build is available.',
@@ -232,7 +255,7 @@ return [
         'update_label' => 'Update software',
         'update_completing' => 'Finishing update process',
         'update_loading' => 'Loading available updates...',
-        'update_success' => 'The update process was performed successfully.',
+        'update_success' => 'Update process complete',
         'update_failed_label' => 'Update failed',
         'force_label' => 'Force update',
         'found' => [
@@ -247,7 +270,7 @@ return [
             'empty' => 'Select action',
             'confirm' => 'Confirm update',
             'skip' => 'Skip this plugin (once only)',
-            'ignore' => 'Skip this plugin (always)',
+            'ignore' => 'Skip this plugin (always)'
         ],
         'important_action_required' => 'Action required',
         'important_view_guide' => 'View upgrade guide',
@@ -256,10 +279,14 @@ return [
         'details_view_homepage' => 'View homepage',
         'details_readme' => 'Documentation',
         'details_readme_missing' => 'There is no documentation provided.',
+        'details_changelog' => 'Changelog',
+        'details_changelog_missing' => 'There is no changelog provided.',
         'details_upgrades' => 'Upgrade Guide',
         'details_upgrades_missing' => 'There are no upgrade instructions provided.',
+        'details_licence' => 'Licence',
+        'details_licence_missing' => 'There is no licence provided.',
         'details_current_version' => 'Current version',
-        'details_author' => 'Author',
+        'details_author' => 'Author'
     ],
     'server' => [
         'connect_error' => 'Error connecting to the server.',
@@ -291,7 +318,8 @@ return [
         'id_label' => 'Event ID',
         'created_at' => 'Date & Time',
         'message' => 'Message',
-        'level' => 'Level'
+        'level' => 'Level',
+        'preview_title' => 'Event'
     ],
     'request_log' => [
         'hint' => 'This log displays a list of browser requests that may require attention. For example, if a visitor opens a CMS page that cannot be found, a record is created with the status code 404.',
@@ -306,7 +334,8 @@ return [
         'count' => 'Counter',
         'referer' => 'Referers',
         'url' => 'URL',
-        'status_code' => 'Status'
+        'status_code' => 'Status',
+        'preview_title' => 'Request'
     ],
     'permissions' => [
         'name' => 'System',
@@ -316,6 +345,8 @@ return [
         'manage_mail_templates' => 'Manage mail templates',
         'manage_mail_settings' => 'Manage mail settings',
         'manage_other_administrators' => 'Manage other administrators',
+        'manage_preferences' => 'Manage backend preferences',
+        'manage_editor' => 'Manage code editor preferences',
         'view_the_dashboard' => 'View the dashboard',
         'manage_branding' => 'Customize the back-end'
     ]

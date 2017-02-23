@@ -1,16 +1,9 @@
 <?php namespace Backend\Controllers;
 
-use Str;
-use Lang;
-use File;
-use Flash;
 use Backend;
-use Redirect;
 use BackendMenu;
 use Backend\Classes\Controller;
-use ApplicationException;
 use System\Classes\SettingsManager;
-use Exception;
 
 /**
  * Access Logs controller
@@ -35,5 +28,10 @@ class AccessLogs extends Controller
 
         BackendMenu::setContext('October.System', 'system', 'settings');
         SettingsManager::setContext('October.Backend', 'access_logs');
+    }
+
+    public function index_onRefresh()
+    {
+        return $this->listRefresh();
     }
 }

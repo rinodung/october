@@ -30,8 +30,8 @@ class Settings extends Controller
     {
         parent::__construct();
 
-        if ($this->action == 'mysettings') {
-            $this->requiredPermissions = null;
+        if ($this->action == 'backend_preferences') {
+            $this->requiredPermissions = ['backend.manage_preferences'];
         }
 
         $this->addCss('/modules/system/assets/css/settings/settings.css', 'core');
@@ -116,6 +116,8 @@ class Settings extends Controller
         $item = $this->findSettingItem($author, $plugin, $code);
         $model = $this->createModel($item);
         $model->resetDefault();
+
+        Flash::success(Lang::get('backend::lang.form.reset_success'));
 
         return Backend::redirect('system/settings/update/'.$author.'/'.$plugin.'/'.$code);
     }

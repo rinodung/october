@@ -1,6 +1,9 @@
 <?php namespace Backend\FormWidgets;
 
+use Carbon\Carbon;
+use Backend\Classes\FormField;
 use Backend\Classes\FormWidgetBase;
+use System\Helpers\DateTime as DateTimeHelper;
 
 /**
  * Date picker
@@ -11,8 +14,6 @@ use Backend\Classes\FormWidgetBase;
  */
 class DatePicker extends FormWidgetBase
 {
-    const TIME_PREFIX = '___time_';
-
     //
     // Configurable properties
     //
@@ -23,14 +24,27 @@ class DatePicker extends FormWidgetBase
     public $mode = 'datetime';
 
     /**
-     * @var string the minimum/earliest date that can be selected.
+     * @var string Provide an explicit date display format.
      */
-    public $minDate = '2000-01-01';
+    public $format = null;
+
+    /**
+     * @var string the minimum/earliest date that can be selected.
+     * eg: 2000-01-01
+     */
+    public $minDate = null;
 
     /**
      * @var string the maximum/latest date that can be selected.
+     * eg: 2020-12-31
      */
-    public $maxDate = '2020-12-31';
+    public $maxDate = null;
+
+    /**
+     * @var string number of years either side or array of upper/lower range
+     * eg: 10 or [1900,1999]
+     */
+    public $yearRange = null;
 
     //
     // Object properties
@@ -47,12 +61,26 @@ class DatePicker extends FormWidgetBase
     public function init()
     {
         $this->fillFromConfig([
+            'format',
             'mode',
             'minDate',
             'maxDate',
+            'yearRange',
         ]);
 
         $this->mode = strtolower($this->mode);
+
+        if ($this->minDate !== null) {
+            $this->minDate = is_integer($this->minDate)
+                ? Carbon::createFromTimestamp($this->minDate)
+                : Carbon::parse($this->minDate);
+        }
+
+        if ($this->maxDate !== null) {
+            $this->maxDate = is_integer($this->maxDate)
+                ? Carbon::createFromTimestamp($this->maxDate)
+                : Carbon::parse($this->maxDate);
+        }
     }
 
     /**
@@ -69,60 +97,24 @@ class DatePicker extends FormWidgetBase
      */
     public function prepareVars()
     {
-        $this->vars['name'] = $this->formField->getName();
-
-        $this->vars['timeName'] = self::TIME_PREFIX.$this->formField->getName(false);
-        $this->vars['timeValue'] = null;
 
         if ($value = $this->getLoadValue()) {
 
-            /*
-             * Date / Time
-             */
-            if ($this->mode == 'datetime') {
-                if (is_object($value)) {
-                    $value = $value->toDateTimeString();
-                }
+            $value = DateTimeHelper::makeCarbon($value, false);
 
-                $dateTime = explode(' ', $value);
-                $value = $dateTime[0];
-                $this->vars['timeValue'] = isset($dateTime[1]) ? substr($dateTime[1], 0, 5) : '';
-            }
-            /*
-             * Date
-             */
-            elseif ($this->mode == 'date') {
-                if (is_string($value)) {
-                    $value = substr($value, 0, 10);
-                }
-                elseif (is_object($value)) {
-                    $value = $value->toDateString();
-                }
-            }
-            elseif ($this->mode == 'time') {
-                if (is_object($value)) {
-                    $value = $value->toTimeString();
-                }
-            }
-
+            $value = $value instanceof Carbon ? $value->toDateTimeString() : $value;
         }
 
+        $this->vars['name'] = $this->getFieldName();
         $this->vars['value'] = $value ?: '';
         $this->vars['field'] = $this->formField;
         $this->vars['mode'] = $this->mode;
         $this->vars['minDate'] = $this->minDate;
         $this->vars['maxDate'] = $this->maxDate;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function loadAssets()
-    {
-        $this->addCss('vendor/pikaday/css/pikaday.css', 'core');
-        $this->addCss('vendor/clockpicker/css/jquery-clockpicker.css', 'core');
-        $this->addCss('css/datepicker.css', 'core');
-        $this->addJs('js/build-min.js', 'core');
+        $this->vars['yearRange'] = $this->yearRange;
+        $this->vars['format'] = $this->format;
+        $this->vars['formatMoment'] = $this->getDateFormatMoment();
+        $this->vars['formatAlias'] = $this->getDateFormatAlias();
     }
 
     /**
@@ -130,18 +122,44 @@ class DatePicker extends FormWidgetBase
      */
     public function getSaveValue($value)
     {
+        if ($this->formField->disabled || $this->formField->hidden) {
+            return FormField::NO_SAVE_DATA;
+        }
+
         if (!strlen($value)) {
             return null;
         }
 
-        $timeValue = post(self::TIME_PREFIX . $this->formField->getName(false));
-        if ($this->mode == 'datetime' && $timeValue) {
-            $value .= ' ' . $timeValue . ':00';
+        return $value;
+    }
+
+    /**
+     * Convert PHP format to JS format
+     */
+    protected function getDateFormatMoment()
+    {
+        if ($this->format) {
+            return DateTimeHelper::momentFormat($this->format);
         }
-        elseif ($this->mode == 'time') {
-            $value .= ':00';
+    }
+
+    /*
+     * Display alias, used by preview mode
+     */
+    protected function getDateFormatAlias()
+    {
+        if ($this->format) {
+            return null;
         }
 
-        return $value;
+        if ($this->mode == 'time') {
+            return 'time';
+        }
+        elseif ($this->mode == 'date') {
+            return 'dateLong';
+        }
+        else {
+            return 'dateTimeLong';
+        }
     }
 }

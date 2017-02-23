@@ -16,12 +16,12 @@ return [
         'formatting' => 'Forráskód',
         'quote' => 'Idézet',
         'code' => 'Kód',
-        'header1' => 'Főcím 1',
-        'header2' => 'Főcím 2',
-        'header3' => 'Főcím 3',
-        'header4' => 'Főcím 4',
-        'header5' => 'Főcím 5',
-        'header6' => 'Főcím 6',
+        'header1' => 'Címsor 1',
+        'header2' => 'Címsor 2',
+        'header3' => 'Címsor 3',
+        'header4' => 'Címsor 4',
+        'header5' => 'Címsor 5',
+        'header6' => 'Címsor 6',
         'bold' => 'Félkövér',
         'italic' => 'Dölt',
         'unorderedlist' => 'Rendezett lista',
@@ -48,7 +48,46 @@ return [
 
     'alert' => [
         'confirm_button_text' => 'OK',
-        'cancel_button_text' => 'Mégsem'
-    ]
+        'cancel_button_text' => 'Mégsem',
+        'widget_remove_confirm' => 'Valóban törölni akarja?'
+    ],
 
+    'datepicker' => [
+        'previousMonth' => 'Előző hónap',
+        'nextMonth' => 'Következő hónap',
+        'months' => ['január', 'február', 'március', 'április', 'május', 'június', 'július', 'augusztus', 'szeptember', 'október', 'november', 'december'],
+        'weekdays' => ['vasárnap', 'hétfő', 'kedd', 'szerda', 'csütörtök', 'péntek', 'szombat'],
+        'weekdaysShort' => ['va', 'hé', 'ke', 'sze', 'cs', 'pé', 'szo']
+    ],
+
+    'filter' => [
+        'group' => [
+            'all' => 'összes'
+        ],
+        'dates' => [
+            'all' => 'összes',
+            'filter_button_text' => 'Szűrés',
+            'reset_button_text'  => 'Alaphelyzet',
+            'date_placeholder' => 'Dátum',
+            'after_placeholder' => 'Kezdete',
+            'before_placeholder' => 'Vége'
+        ]
+    ],
+
+    'eventlog' => [
+        'show_stacktrace' => 'Részletek',
+        'hide_stacktrace' => 'Rejtés',
+        'tabs' => [
+            'formatted' => 'Formázott',
+            'raw' => 'Tömörített',
+        ],
+        'editor' => [
+            'title' => 'Forráskód szerkesztő',
+            'description' => 'Your operating system should be configured to listen to one of these URL schemes.',
+            'openWith' => 'Megnyitás mint',
+            'remember_choice' => 'Kiválasztott beállítások megjegyzése ebben a munkamenetben',
+            'open' => 'Megnyitás',
+            'cancel' => 'Mégsem'
+        ]
+    ]
 ];

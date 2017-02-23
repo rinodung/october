@@ -124,6 +124,8 @@
         this.uploaderOptions.thumbnailHeight = this.options.thumbnailHeight
             ? this.options.thumbnailHeight : null
 
+        this.uploaderOptions.resize = this.onResizeFileInfo
+
         /*
          * Add CSRF token to headers
          */
@@ -139,10 +141,46 @@
         this.dropzone.on('error', this.proxy(this.onUploadError))
     }
 
+    FileUpload.prototype.onResizeFileInfo = function(file) {
+        var info,
+            targetWidth,
+            targetHeight
+
+        if (!this.options.thumbnailWidth && !this.options.thumbnailWidth) {
+            targetWidth = targetHeight = 100
+        }
+        else if (this.options.thumbnailWidth) {
+            targetWidth = this.options.thumbnailWidth
+            targetHeight = this.options.thumbnailWidth * file.height / file.width
+        }
+        else if (this.options.thumbnailHeight) {
+            targetWidth = this.options.thumbnailHeight * file.height / file.width
+            targetHeight = this.options.thumbnailHeight
+        }
+
+        // drawImage(image, srcX, srcY, srcWidth, srcHeight, trgX, trgY, trgWidth, trgHeight) takes an image, clips it to
+        // the rectangle (srcX, srcY, srcWidth, srcHeight), scales it to dimensions (trgWidth, trgHeight), and draws it
+        // on the canvas at coordinates (trgX, trgY).
+        info = {
+            srcX: 0,
+            srcY: 0,
+            srcWidth: file.width,
+            srcHeight: file.height,
+            trgX: 0,
+            trgY: 0,
+            trgWidth: targetWidth,
+            trgHeight: targetHeight
+        }
+
+        return info
+    }
+
     FileUpload.prototype.onUploadAddedFile = function(file) {
+        var $object = $(file.previewElement).data('dzFileObject', file)
+
         // Remove any exisiting objects for single variety
         if (!this.options.isMulti) {
-            $(file.previewElement).siblings().remove()
+            this.removeFileFromElement($object.siblings())
         }
 
         this.evalIsPopulated()
@@ -189,6 +227,22 @@
                 formData.append(field.name, field.value)
             })
         }
+    }
+
+    FileUpload.prototype.removeFileFromElement = function($element) {
+        var self = this
+
+        $element.each(function() {
+            var $el = $(this),
+                obj = $el.data('dzFileObject')
+
+            if (obj) {
+                self.dropzone.removeFile(obj)
+            }
+            else {
+                $el.remove()
+            }
+        })
     }
 
     //
@@ -251,7 +305,7 @@
                 $object.addClass('is-loading')
             })
             .one('ajaxDone', function(){
-                $object.remove()
+                self.removeFileFromElement($object)
                 self.evalIsPopulated()
             })
             .request()
@@ -293,7 +347,7 @@
 
         // Remove any exisiting objects for single variety
         if (!this.options.isMulti) {
-            $target.siblings().remove()
+            this.removeFileFromElement($target.siblings())
         }
 
         $target.ocPopover({
@@ -308,7 +362,7 @@
         var $container = $target.data('oc.popover').$container
         $container.one('click', '[data-remove-file]', function() {
             $target.data('oc.popover').hide()
-            $target.remove()
+            self.removeFileFromElement($target)
             self.evalIsPopulated()
         })
     }

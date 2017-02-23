@@ -1,10 +1,6 @@
 <?php namespace Backend\Classes;
 
 use Str;
-use File;
-use Yaml;
-use Closure;
-use Illuminate\Container\Container;
 use System\Classes\PluginManager;
 
 /**
@@ -102,6 +98,10 @@ class WidgetManager
      */
     public function registerFormWidget($className, $widgetInfo = null)
     {
+        if (!is_array($widgetInfo)) {
+            $widgetInfo = ['code' => $widgetInfo];
+        }
+
         $widgetCode = isset($widgetInfo['code']) ? $widgetInfo['code'] : null;
 
         if (!$widgetCode) {
@@ -117,10 +117,7 @@ class WidgetManager
      * Usage:
      * <pre>
      *   WidgetManager::registerFormWidgets(function($manager){
-     *       $manager->registerFormWidget('Backend\FormWidgets\CodeEditor', [
-     *           'name' => 'Code editor',
-     *           'code'  => 'codeeditor'
-     *       ]);
+     *       $manager->registerFormWidget('Backend\FormWidgets\CodeEditor', 'codeeditor');
      *   });
      * </pre>
      */

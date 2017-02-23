@@ -5,20 +5,6 @@ return [
         'name' => 'October CMS',
         'tagline' => 'Intoarcerea la elementele de baza',
     ],
-    'locale' => [
-        'en' => 'Engleza',
-        'nl' => 'Olandeza',
-        'ja' => 'Japoneza',
-        'sv' => 'Suedeza',
-        'tr' => 'Turca',
-        'de' => 'Germana',
-        'ru' => 'Rusa',
-        'fr' => 'Franceza',
-        'ro' => 'Romana',
-        'pt-br' => 'Portugheza (Brazilia)',
-        'fa' => 'Persian',
-        'nb-no' => 'Norvegiană (Bokmål)'
-    ],
     'directory' => [
         'create_fail' => "Nu se poate crea directorul: :name",
     ],
@@ -150,6 +136,7 @@ return [
         'plugin_description' => 'Descriere',
         'plugin_version' => 'Versiune',
         'plugin_author' => 'Autor',
+        'plugin_not_found' => 'Plugin not found',
         'core_current_build' => 'Versiune curenta',
         'core_build' => 'Versiune :build',
         'core_build_help' => 'Ultima versiune este disponibila.',

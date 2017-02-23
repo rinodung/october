@@ -192,8 +192,9 @@
     }
 
     DropdownProcessor.prototype.fetchOptions = function(cellElement, onSuccess) {
-        if (this.columnConfiguration.options)
+        if (this.columnConfiguration.options) {
             onSuccess(this.columnConfiguration.options)
+        }
         else {
             // If options are not provided and not found in the cache,
             // request them from the server. For dependent drop-downs 
@@ -212,7 +213,7 @@
 
             if (!this.cachedOptionPromises[cachingKey]) {
                 var requestData = {
-                       column: this.columnName,
+                        column: this.columnName,
                         rowData: this.tableObj.getRowData(row)
                     },
                     handlerName = this.tableObj.getAlias()+'::onGetDropdownOptions'
@@ -341,12 +342,14 @@
             this.showDropdown()
     }
 
-        /*
+    /*
      * This method is called when a cell value in the row changes.
      */
     DropdownProcessor.prototype.onRowValueChanged = function(columnName, cellElement) {
         // Determine if this drop-down depends on the changed column
         // and update the option list if necessary
+
+        // TODO: setting drop-down values with table.setRowValues() is not implemented currently
 
         if (!this.columnConfiguration.dependsOn)
             return

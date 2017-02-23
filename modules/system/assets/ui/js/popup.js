@@ -1,36 +1,21 @@
 /*
-=require ../vendor/bootstrap/js/modal.js
-*/
-/*
  * Ajax Popup plugin
  *
- * Options:
- * - content: content HTML string or callback
- * 
- * Data attributes:
- * - data-control="popup" - enables the ajax popup plugin
- * - data-ajax="popup-content.htm" - ajax content to load
- * - data-handler="widget:pluginName" - October ajax request name
- * - data-keyboard="false" - Allow popup to be closed with the keyboard
- * - data-extra-data="file_id: 1" - October ajax request data
- * - data-size="large" - Popup size, available sizes: giant, huge, large, small, tiny
+ * Documentation: ../docs/popup.md
  *
- * JavaScript API:
- * $('a#someLink').popup({ ajax: 'popup-content.htm' })
- * $('a#someLink').popup({ handler: 'onLoadSomePopup' })
- * $('a#someLink').popup({ handler: 'onLoadSomePopup', extraData: { id: 3 } })
- *
- * Dependences:
- * - Bootstrap Modal (modal.js)
+ * Require:
+ *  - bootstrap/modal
  */
 
 +function ($) { "use strict";
+
+    var Base = $.oc.foundation.base,
+        BaseProto = Base.prototype
 
     // POPUP CLASS DEFINITION
     // ============================
 
     var Popup = function(element, options) {
-        var self = this
         this.options    = options
         this.$el        = $(element)
         this.$container = null
@@ -42,46 +27,18 @@
 
         this.$container = this.createPopupContainer()
         this.$content = this.$container.find('.modal-content:first')
+        this.$dialog = this.$container.find('.modal-dialog:first')
         this.$modal = this.$container.modal({ show: false, backdrop: false, keyboard: this.options.keyboard })
 
-        /*
-         * Duplicate the popup reference on the .control-popup container
-         */
-        this.$container.data('oc.popup', this)
+        $.oc.foundation.controlUtils.markDisposable(element)
+        Base.call(this)
 
-        /*
-         * Hook in to BS Modal events
-         */
-        this.$modal.on('hide.bs.modal', function(){
-            self.triggerEvent('hide.oc.popup')
-            self.isOpen = false
-            self.setBackdrop(false)
-        })
-
-        this.$modal.on('hidden.bs.modal', function(){
-            self.triggerEvent('hidden.oc.popup')
-            self.$container.remove()
-            self.$el.data('oc.popup', null)
-            $(document.body).removeClass('modal-open')
-        })
-
-        this.$modal.on('show.bs.modal', function(){
-            self.isOpen = true
-            self.setBackdrop(true)
-            $(document.body).addClass('modal-open')
-        })
-
-        this.$modal.on('shown.bs.modal', function(){
-            self.triggerEvent('shown.oc.popup')
-        })
-
-        this.$modal.on('close.oc.popup', function(){
-            self.hide()
-            return false
-        })
-
+        this.initEvents()
         this.init()
     }
+
+    Popup.prototype = Object.create(BaseProto)
+    Popup.prototype.constructor = Popup
 
     Popup.DEFAULTS = {
         ajax: null,
@@ -100,16 +57,16 @@
         /*
          * Do not allow the same popup to open twice
          */
-        if (self.isOpen)
-            return
+        if (self.isOpen) return
 
         /*
          * Show loading panel
          */
         this.setBackdrop(true)
 
-        if (!this.options.content)
+        if (!this.options.content) {
             this.setLoading(true)
+        }
 
         /*
          * October AJAX
@@ -117,7 +74,7 @@
         if (this.options.handler) {
 
             this.$el.request(this.options.handler, {
-                data: this.options.extraData,
+                data: paramToObj('data-extra-data', this.options.extraData),
                 success: function(data, textStatus, jqXHR) {
                     this.success(data, textStatus, jqXHR).done(function(){
                         self.setContent(data.result)
@@ -136,7 +93,6 @@
             })
 
         }
-
         /*
          * Regular AJAX
          */
@@ -144,7 +100,7 @@
 
             $.ajax({
                 url: this.options.ajax,
-                data: this.options.extraData,
+                data: paramToObj('data-extra-data', this.options.extraData),
                 success: function(data) {
                     self.setContent(data)
                 },
@@ -152,7 +108,6 @@
             })
 
         }
-
         /*
          * Specified content
          */
@@ -164,6 +119,70 @@
 
             this.setContent(content)
         }
+    }
+
+    Popup.prototype.initEvents = function(){
+        var self = this
+
+        /*
+         * Duplicate the popup reference on the .control-popup container
+         */
+        this.$container.data('oc.popup', this)
+
+        /*
+         * Hook in to BS Modal events
+         */
+        this.$modal.on('hide.bs.modal', function(){
+            self.triggerEvent('hide.oc.popup')
+            self.isOpen = false
+            self.setBackdrop(false)
+        })
+
+        this.$modal.on('hidden.bs.modal', function(){
+            self.triggerEvent('hidden.oc.popup')
+            self.$container.remove()
+            $(document.body).removeClass('modal-open')
+            self.dispose()
+        })
+
+        this.$modal.on('show.bs.modal', function(){
+            self.isOpen = true
+            self.setBackdrop(true)
+            $(document.body).addClass('modal-open')
+        })
+
+        this.$modal.on('shown.bs.modal', function(){
+            self.triggerEvent('shown.oc.popup')
+        })
+
+        this.$modal.on('close.oc.popup', function(){
+            self.hide()
+            return false
+        })
+    }
+
+    Popup.prototype.dispose = function() {
+        this.$modal.off('hide.bs.modal')
+        this.$modal.off('hidden.bs.modal')
+        this.$modal.off('show.bs.modal')
+        this.$modal.off('shown.bs.modal')
+        this.$modal.off('close.oc.popup')
+
+        this.$el.off('dispose-control', this.proxy(this.dispose))
+        this.$el.removeData('oc.popup')
+        this.$container.removeData('oc.popup')
+
+        this.$container = null
+        this.$content = null
+        this.$dialog = null
+        this.$modal = null
+        this.$el = null
+
+        // In some cases options could contain callbacks, 
+        // so it's better to clean them up too.
+        this.options = null
+
+        BaseProto.dispose.call(this)
     }
 
     Popup.prototype.createPopupContainer = function() {
@@ -198,6 +217,14 @@
         this.firstDiv = this.$content.find('>div:first')
         if (this.firstDiv.length > 0)
             this.firstDiv.data('oc.popup', this)
+
+        var $defaultFocus = $('[default-focus]', this.$content)
+        if ($defaultFocus.is(":visible")) {
+            window.setTimeout(function() {
+                $defaultFocus.focus()
+                $defaultFocus = null
+            }, 300)
+        }
     }
 
     Popup.prototype.setBackdrop = function(val) {
@@ -231,6 +258,16 @@
         }
     }
 
+    Popup.prototype.setShake = function() {
+        var self = this
+
+        this.$content.addClass('popup-shaking')
+
+        setTimeout(function() {
+            self.$content.removeClass('popup-shaking')
+        }, 1000)
+    }
+
     Popup.prototype.hideLoading = function(val) {
         this.setLoading(false)
 
@@ -241,15 +278,17 @@
     }
 
     Popup.prototype.triggerEvent = function(eventName, params) {
-        if (!params)
+        if (!params) {
             params = [this.$el, this.$modal]
+        }
 
         var eventObject = jQuery.Event(eventName, { relatedTarget: this.$container.get(0) })
 
         this.$el.trigger(eventObject, params)
 
-        if (this.firstDiv)
+        if (this.firstDiv) {
             this.firstDiv.trigger(eventObject, params)
+        }
     }
 
     Popup.prototype.reload = function() {
@@ -262,6 +301,10 @@
         this.$modal.on('click.dismiss.popup', '[data-dismiss="popup"]', $.proxy(this.hide, this))
         this.triggerEvent('popupShow') // Deprecated
         this.triggerEvent('show.oc.popup')
+
+        // Fixes an issue where the Modal makes `position: fixed` elements relative to itself
+        // https://github.com/twbs/bootstrap/issues/15856
+        this.$dialog.css('transform', 'inherit')
     }
 
     Popup.prototype.hide = function() {
@@ -270,6 +313,10 @@
 
         if (this.allowHide)
             this.$modal.modal('hide')
+
+        // Fixes an issue where the Modal makes `position: fixed` elements relative to itself
+        // https://github.com/twbs/bootstrap/issues/15856
+        this.$dialog.css('transform', '')
     }
 
     /*
@@ -277,10 +324,12 @@
      * you should call .hide() once finished
      */
     Popup.prototype.visible = function(val) {
-        if (val)
+        if (val) {
             this.$modal.addClass('in')
-        else
+        }
+        else {
             this.$modal.removeClass('in')
+        }
         this.setBackdrop(val)
     }
 
@@ -332,10 +381,22 @@
     // POPUP DATA-API
     // ===============
 
-    $(document).on('click.oc.popup', '[data-control="popup"]', function() {
-        $(this).popup()
+    function paramToObj(name, value) {
+        if (value === undefined) value = ''
+        if (typeof value == 'object') return value
 
-        return false
+        try {
+            return JSON.parse(JSON.stringify(eval("({" + value + "})")))
+        }
+        catch (e) {
+            throw new Error('Error parsing the '+name+' attribute value. '+e)
+        }
+    }
+
+    $(document).on('click.oc.popup', '[data-control="popup"]', function(event) {
+        event.preventDefault()
+
+        $(this).popup()
     });
 
     /*
@@ -348,7 +409,7 @@
         })
         .on('ajaxFail', '[data-popup-load-indicator]', function(event, context) {
             if ($(this).data('request') != context.handler) return
-            $(this).closest('.control-popup').addClass('in').popup('setLoading', false)
+            $(this).closest('.control-popup').addClass('in').popup('setLoading', false).popup('setShake')
         })
         .on('ajaxDone', '[data-popup-load-indicator]', function(event, context) {
             if ($(this).data('request') != context.handler) return

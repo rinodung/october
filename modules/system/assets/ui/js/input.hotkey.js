@@ -1,7 +1,4 @@
 /*
-=require foundation.js
-*/
-/*
  * Hot key binding.
  * 
  * Data attributes:
@@ -53,9 +50,6 @@
     }
 
     HotKey.prototype.init = function() {
-        if (this.options.hotkeyMac) 
-            this.options.hotkey += ', ' + this.options.hotkeyMac // @todo deprecated
-
         this.initKeyMap()
 
         var keys = this.options.hotkey.toLowerCase().split(',')
@@ -178,7 +172,6 @@
 
     HotKey.DEFAULTS = {
         hotkey: null,
-        hotkeyMac: null, // @todo deprecated
         hotkeyTarget: 'html',
         hotkeyVisible: true,
         callback: function(element) {
@@ -202,7 +195,7 @@
             if (!data) $this.data('oc.hotkey', (data = new HotKey(this, options)))
             if (typeof option == 'string') data[option].apply(data, args)
         })
-      }
+    }
 
     $.fn.hotKey.Constructor = HotKey
 
@@ -217,7 +210,7 @@
     // HOTKEY DATA-API
     // ==============
     
-    $(document).render(function(){
+    $(document).render(function() {
         $('[data-hotkey]').hotKey()
     })
 

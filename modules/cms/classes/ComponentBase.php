@@ -2,11 +2,11 @@
 
 use Str;
 use Lang;
-use Event;
 use Config;
 use Cms\Classes\CodeBase;
 use Cms\Classes\CmsException;
 use October\Rain\Extension\Extendable;
+use BadMethodCallException;
 
 /**
  * Component base class
@@ -17,8 +17,8 @@ use October\Rain\Extension\Extendable;
 abstract class ComponentBase extends Extendable
 {
     use \System\Traits\AssetMaker;
+    use \System\Traits\EventEmitter;
     use \System\Traits\PropertyContainer;
-    use \October\Rain\Support\Traits\Emitter;
 
     /**
      * @var string A unique identifier for this component.
@@ -36,7 +36,7 @@ abstract class ComponentBase extends Extendable
     public $name;
 
     /**
-     * @var boolean Determines whether the component is hidden in the back-end UI.
+     * @var boolean Determines whether the component is hidden from the back-end UI.
      */
     public $isHidden = false;
 
@@ -64,12 +64,12 @@ abstract class ComponentBase extends Extendable
     protected $dirName;
 
     /**
-     * @var Cms\Classes\Controller Controller object.
+     * @var \Cms\Classes\Controller Controller object.
      */
     protected $controller;
 
     /**
-     * @var Cms\Classes\PageCode Page object object.
+     * @var \Cms\Classes\PageCode Page object object.
      */
     protected $page;
 
@@ -81,6 +81,8 @@ abstract class ComponentBase extends Extendable
     /**
      * Component constructor. Takes in the page or layout code section object
      * and properties set by the page or layout.
+     * @param null|CodeBase $cmsObject
+     * @param array $properties
      */
     public function __construct(CodeBase $cmsObject = null, $properties = [])
     {
@@ -154,10 +156,7 @@ abstract class ComponentBase extends Extendable
         /*
          * Extensibility
          */
-        if (
-            ($event = $this->fireEvent('component.beforeRunAjaxHandler', [$handler], true)) ||
-            ($event = Event::fire('cms.component.beforeRunAjaxHandler', [$this, $handler], true))
-        ) {
+        if ($event = $this->fireSystemEvent('cms.component.beforeRunAjaxHandler', [$handler])) {
             return $event;
         }
 
@@ -166,10 +165,7 @@ abstract class ComponentBase extends Extendable
         /*
          * Extensibility
          */
-        if (
-            ($event = $this->fireEvent('component.runAjaxHandler', [$handler, $result], true)) ||
-            ($event = Event::fire('cms.component.runAjaxHandler', [$this, $handler, $result], true))
-        ) {
+        if ($event = $this->fireSystemEvent('cms.component.runAjaxHandler', [$handler, $result])) {
             return $event;
         }
 
@@ -216,6 +212,7 @@ abstract class ComponentBase extends Extendable
      * Sets an external property name.
      * @param string $name Property name
      * @param string $extName External property name
+     * @return string
      */
     public function setExternalPropertyName($name, $extName)
     {
@@ -262,15 +259,16 @@ abstract class ComponentBase extends Extendable
      */
     public function __call($method, $parameters)
     {
-        if (method_exists($this, $method)) {
-            return call_user_func_array([$this, $method], $parameters);
+        try {
+            parent::__call($method, $parameters);
         }
+        catch (BadMethodCallException $ex) {}
 
         if (method_exists($this->controller, $method)) {
             return call_user_func_array([$this->controller, $method], $parameters);
         }
 
-        throw new CmsException(Lang::get('cms::lang.component.method_not_found', [
+        throw new BadMethodCallException(Lang::get('cms::lang.component.method_not_found', [
             'name' => get_class($this),
             'method' => $method
         ]));

@@ -11,9 +11,6 @@
 
         this.options = options || {};
 
-        // @deprecated remove if year >= 2016
-        if (this.options.triggerType !== false && this.options.triggerAction === false) this.options.triggerAction = this.options.triggerType
-
         if (this.options.triggerCondition === false)
             throw new Error('Trigger condition is not specified.')
 
@@ -28,7 +25,7 @@
         if (this.options.triggerCondition.indexOf('value') == 0) {
             var match = this.options.triggerCondition.match(/[^[\]]+(?=])/g)
             this.triggerCondition = 'value'
-            this.triggerConditionValue = (match) ? match : ""
+            this.triggerConditionValue = (match) ? match : [""]
         }
 
         this.triggerParent = this.options.triggerClosestParent !== undefined
@@ -160,7 +157,7 @@
 
             if (!data) $this.data('oc.triggerOn', (data = new TriggerOn(this, options)))
         })
-      }
+    }
 
     $.fn.triggerOn.Constructor = TriggerOn
 

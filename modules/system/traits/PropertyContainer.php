@@ -25,7 +25,7 @@ trait PropertyContainer
      */
     public function validateProperties(array $properties)
     {
-        $definedProperties = $this->defineProperties();
+        $definedProperties = $this->defineProperties() ?: [];
 
         // Determine and implement default values
         $defaultProperties = [];
@@ -52,22 +52,28 @@ trait PropertyContainer
 
     /**
      * Sets multiple properties.
+     * @param array $properties
+     * @return void
      */
     public function setProperties($properties)
     {
-        return $this->properties = $this->validateProperties($properties);
+        $this->properties = $this->validateProperties($properties);
     }
 
     /**
      * Sets a property value
+     * @param string $name
+     * @param mixed $value
+     * @return void
      */
     public function setProperty($name, $value)
     {
-        return $this->properties[$name] = $value;
+        $this->properties[$name] = $value;
     }
 
     /**
      * Returns all properties.
+     * @return array
      */
     public function getProperties()
     {

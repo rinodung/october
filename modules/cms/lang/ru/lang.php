@@ -12,6 +12,12 @@ return [
         'delete_success' => 'Шаблоны были успешно удалены: :count.',
         'file_name_required' => 'Пожалуйста, укажите имя файла шаблона.'
     ],
+    'dashboard' => [
+        'active_theme' => [
+            'online' => 'Онлайн',
+            'maintenance' => 'в разработке',
+        ]
+    ],
     'theme' => [
       'not_found_name' => "Тема ':name' не найдена.",
         'active' => [
@@ -265,8 +271,8 @@ return [
         'multiple_selected' => 'Выбрано несколько объектов.',
         'uploading_file_num' => 'Загрузка файлов: :number',
         'uploading_complete' => 'Загрузка файлов завершена!',
+        'uploading_error' => 'Ошибка загрузки',
         'order_by' => 'Сортировать по',
-        'search' => 'Поиск',
         'folder' => 'Папка',
         'no_files_found' => 'Ни один из файлов не удовлетворяет вашему запросу.',
         'delete_empty' => 'Пожалуйста, выберите объекты для удаления.',

@@ -15,9 +15,7 @@
     OctoberLayout.prototype.updateLayout = function(title) {
         var $children, $el, fixedWidth, margin
 
-        // The entire 'width-fix' class can probably be removed if year >= 2017
-        // After checking that it isn't being used anywhere -sg
-        $('.layout-cell.width-fix, [data-calculate-width]').each(function(){
+        $('[data-calculate-width]').each(function(){
             $children = $(this).children()
 
             if ($children.length > 0) {
@@ -42,20 +40,25 @@
 
     OctoberLayout.prototype.toggleAccountMenu = function(el) {
         var self = this,
-            $menu = $(el).next()
+            $el = $(el),
+            $parent = $(el).parent(),
+            $menu = $el.next()
 
         if ($menu.hasClass('active')) {
             self.$accountMenuOverlay.remove()
+            $parent.removeClass('highlight')
             $menu.removeClass('active')
         }
         else {
             self.$accountMenuOverlay = $('<div />').addClass('popover-overlay')
             $(document.body).append(self.$accountMenuOverlay)
+            $parent.addClass('highlight')
             $menu.addClass('active')
 
             self.$accountMenuOverlay.one('click', function(){
                 self.$accountMenuOverlay.remove()
                 $menu.removeClass('active')
+                $parent.removeClass('highlight')
             })
         }
     }

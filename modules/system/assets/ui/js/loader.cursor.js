@@ -13,6 +13,9 @@
  *
  * The event parameter in the show() method is optional. If it is passed, the initial cursor position
  * will be loaded from it.
+ *
+ * Require:
+ *  - modernizr/modernizr
  */
 +function ($) { "use strict";
     if ($.oc === undefined)
@@ -36,9 +39,7 @@
         if (this.counter > 1)
             return
 
-        var self = this,
-            $window = $(window);
-
+        var self = this;
 
         if (event !== undefined && event.clientY !== undefined) {
             self.indicator.css({
@@ -70,7 +71,7 @@
         }
     }
 
-    $(document).ready(function(){
+    $(document).ready(function() {
         $.oc.cursorLoadIndicator = new CursorLoadIndicator();
     })
 

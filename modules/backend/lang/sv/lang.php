@@ -2,7 +2,7 @@
 
 return [
     'auth' => [
-        'title' => 'Administrations område'
+        'title' => 'Administrationsområde'
     ],
     'field' => [
         'invalid_type' => 'Felaktig fälttyp använd :type.',
@@ -19,6 +19,9 @@ return [
             'help' => "Du har inte behörighet att visa den här sidan.",
             'cms_link' => "Gå till CMS backend",
         ],
+        'invalid_token' => [
+            'label' => 'Ogiltig säkerhetstoken'
+        ],
     ],
     'partial' => [
         'not_found_name' => "En partial med namn ':name' kunde ej hittas",
@@ -31,12 +34,12 @@ return [
         'login_placeholder' => 'användarnamn',
         'password_placeholder' => 'lösenord',
         'forgot_password' => "Glömt ditt lösenord?",
-        'enter_email' => "Ange din epost-adress",
+        'enter_email' => "Ange din e-postadress",
         'enter_login' => "Ange ditt användarnamn",
-        'email_placeholder' => "epost",
+        'email_placeholder' => "e-post",
         'enter_new_password' => "Välj ett nytt lösenord",
         'password_reset' => "Återställ lösenord",
-        'restore_success' => "Ett meddelande har sänts till din epost-adress med instruktioner om hur du återställer ditt lösenord",
+        'restore_success' => "Ett meddelande har sänts till din e-postadress med instruktioner om hur du återställer ditt lösenord",
         'restore_error' => "En användare med användarnamnet ':login' kunde ej hittas",
         'reset_success' => "Ditt lösenord har blivit återställt. Du kan nu logga in",
         'reset_error' => "Felaktig data för lösenordsåterställning. Var vänlig prova igen",
@@ -60,12 +63,10 @@ return [
         'columns' => '{1} column|[2,Inf] kolonner',
         'widget_new_row_label' => 'Forcera en ny rad',
         'widget_new_row_description' => 'Lägg widgeten på en ny rad.',
-        'widget_title_label' => 'Widget titel',
+        'widget_title_label' => 'Widget-titel',
         'widget_title_error' => 'En widgets titel är tvingande.',
         'status' => [
-            'widget_title_default' => 'System status',
-            'online' => 'online',
-            'maintenance' => 'i underhåll',
+            'widget_title_default' => 'Systemstatus',
             'update_available' => '{0} uppdateringar tillgängliga!|{1} uppdatering tillgänglig!|[2,Inf] uppdateringar tillgängliga!'
         ]
     ],
@@ -86,6 +87,7 @@ return [
         'password' => "Lösenord",
         'password_confirmation' => "Bekräfta lösenord",
         'permissions' => 'Rättigheter',
+        'account' => 'Konto',
         'superuser' => "Superanvändare",
         'superuser_comment' => "Markera denna checkbox för att ge denna person tillgång till alla områden",
         'send_invite' => 'Inbjudan är sänd via e-post',
@@ -107,6 +109,7 @@ return [
             'new' => 'Ny administratörsgrupp',
             'delete_confirm' => 'Vill du verkligen radera denna administratörgrupp?',
             'return' => 'Återgå till grupplistan',
+            'users_count' => 'Användare'
         ],
         'preferences' => [
             'not_authenticated' => 'Det finns ingen autentiserad användare att ladda eller spara inställningar för',
@@ -139,7 +142,13 @@ return [
         'attachment' => 'Bilaga',
         'help' => 'Lägg till en och beskriving för denna bilagan.',
         'title_label' => 'Titel',
-        'description_label' => 'Beskriving'
+        'description_label' => 'Beskriving',
+        'default_prompt' => 'Klicka på %s eller dra en fil hit för att ladda upp',
+        'attachment_url' => 'Bilage-URL',
+        'upload_file' => 'Ladda upp fil',
+        'upload_error' => 'Fel vid uppladdning',
+        'remove_confirm' => 'Är du säker?',
+        'remove_file' => 'Radera fil'
     ],
     'form' => [
         'create_title' => "Ny :name",
@@ -148,10 +157,10 @@ return [
         'create_success' => ':name är nu skapad',
         'update_success' => ':name har blivit uppdaterad',
         'delete_success' => ':name kunde ej raderas',
-        'missing_id' => "Record ID för formuläret har ej blivit specificerat",
+        'missing_id' => "Rad-ID för formuläret har ej blivit specificerat",
         'missing_model' => 'Formuläregenskapen som används i :class har ingen modell definierad',
         'missing_definition' => "Formuläregenskapen saknar ett fält för ':field'",
-        'not_found' => 'Record ID :id för formuläret kunde ej hittas',
+        'not_found' => 'Rad-ID :id för formuläret kunde ej hittas',
         'action_confirm' => 'Är du säker?',
         'create' => 'Skapa',
         'create_and_close' => 'Skapa och stäng',
@@ -176,11 +185,13 @@ return [
         'close' => 'Stäng',
         'confirm' => 'Bekräfta',
         'reload' => 'Ladda om',
+        'complete' => 'Slutför',
         'ok' => 'OK',
         'or' => 'eller',
         'confirm_tab_close' => 'Vill du verkligen stänga fliken? Ej sparade ändringar kommer gå förlorade',
         'behavior_not_ready' => 'Formuläregenskap har ej blivit initierad, kontrollera att du anropat initForm() i din controller',
         'preview_no_files_message' => 'Filen är inte uppladdad',
+        'preview_no_record_message' => 'Ingen rad är vald.',
         'select' => 'Välj',
         'select_all' => 'alla',
         'select_none' => 'ingen',
@@ -223,6 +234,10 @@ return [
         'unlink_name' => "Avlänka :name",
         'unlink_confirm' => "Är du säker?",
     ],
+    'reorder' => [
+        'default_title' => 'Ordna om rader',
+        'no_records' => 'Det finns inga rader att sortera.',
+    ],
     'model' => [
         'name' => "Modell",
         'not_found' => "Modellen ':class' med ID :id kunde ej hittas",
@@ -247,6 +262,7 @@ return [
         'code_folding' => 'Dölj kod',
         'word_wrap' => 'Radbryting',
         'highlight_active_line' => 'Markera aktiv rad',
+        'auto_closing' => 'Stäng taggar och specialtecken automatiskt',
         'show_invisibles' => 'Visa dolda tecken',
         'show_gutter' => 'Visa ränna',
         'theme' => 'Färgschema'
@@ -274,10 +290,9 @@ return [
         'app_tagline' => 'Applikationstaggning',
         'app_tagline_description' => 'Detta namn visas på inloggningsskärmen för back-end.',
         'colors' => 'Färger',
-        'primary_light' => 'Primär (Ljus)',
-        'primary_dark' => 'Primär (Mörk)',
-        'secondary_light' => 'Sekundär (Ljus)',
-        'secondary_dark' => 'Sekundär (Mörk)',
+        'primary_color' => 'Primär color',
+        'secondary_color' => 'Sekundär color',
+        'accent_color' => 'Accent color',
         'styles' => 'Formatmallar',
         'custom_stylesheet' => 'Anpassad formatmall'
     ],
@@ -289,10 +304,10 @@ return [
     ],
     'access_log' => [
         'hint' => 'Denna logg visar en lista över lyckade inloggningsförsök till administratrationen. Registret behålls i :days dagar.',
-        'menu_label' => 'Åtkomst logg',
+        'menu_label' => 'Åtkomstlogg',
         'menu_description' => 'Visa en lista över framgångsrika inloggningar av back-end användare.',
         'created_at' => 'Dataum och tid',
-        'login' => 'Inlogging',
+        'login' => 'Inloggning',
         'ip_address' => 'IP adress',
         'first_name' => 'Förnamn',
         'last_name' => 'Efternamn',

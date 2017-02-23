@@ -19,7 +19,7 @@
 
     var LoadIndicator = function (element, options) {
 
-        var $el = this.$el = $(element)
+        this.$el = $(element)
 
         this.options = options || {}
         this.tally = 0
@@ -52,6 +52,11 @@
         this.$el.addClass('in-progress')
 
         this.tally++
+    }
+
+    LoadIndicator.prototype.destroy = function() {
+        this.$el.removeData('oc.loadIndicator')
+        this.$el = null
     }
 
     LoadIndicator.DEFAULTS = {
@@ -88,7 +93,7 @@
                 }
             }
         })
-      }
+    }
 
     $.fn.loadIndicator.Constructor = LoadIndicator
 

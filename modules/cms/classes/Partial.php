@@ -9,18 +9,13 @@
 class Partial extends CmsCompoundObject
 {
     /**
-     * Returns the directory name corresponding to the object type.
-     * For pages the directory name is "pages", for layouts - "layouts", etc.
-     * @return string
+     * @var string The container name associated with the model, eg: pages.
      */
-    public static function getObjectTypeDirName()
-    {
-        return 'partials';
-    }
+    protected $dirName = 'partials';
 
     /**
      * Returns name of a PHP class to us a parent for the PHP class created for the object's PHP section.
-     * @return mixed Returns the class name or null.
+     * @return string Returns the class name.
      */
     public function getCodeClassParent()
     {

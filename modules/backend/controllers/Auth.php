@@ -3,11 +3,8 @@
 use Mail;
 use Flash;
 use Backend;
-use Redirect;
 use Validator;
 use BackendAuth;
-use BackendMenu;
-use Backend\Models\User;
 use Backend\Models\AccessLog;
 use Backend\Classes\Controller;
 use System\Classes\UpdateManager;
@@ -63,8 +60,8 @@ class Auth extends Controller
     public function signin_onSubmit()
     {
         $rules = [
-            'login'    => 'required|min:2|max:32',
-            'password' => 'required|min:2'
+            'login'    => 'required|between:2,255',
+            'password' => 'required|between:4,255'
         ];
 
         $validation = Validator::make(post(), $rules);
@@ -96,7 +93,7 @@ class Auth extends Controller
         BackendAuth::logout();
         return Backend::redirect('backend');
     }
-    
+
     /**
      * Request a password reset verification code.
      */
@@ -115,7 +112,7 @@ class Auth extends Controller
     public function restore_onSubmit()
     {
         $rules = [
-            'login' => 'required|min:2|max:32'
+            'login' => 'required|between:2,255'
         ];
 
         $validation = Validator::make(post(), $rules);
@@ -176,7 +173,7 @@ class Auth extends Controller
         }
 
         $rules = [
-            'password' => 'required|min:2'
+            'password' => 'required|between:4,255'
         ];
 
         $validation = Validator::make(post(), $rules);

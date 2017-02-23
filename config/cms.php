@@ -4,19 +4,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Bleeding edge updates
-    |--------------------------------------------------------------------------
-    |
-    | If you are developing with October, it is important to have the latest
-    | code base, set this value to 'true' to tell the platform to download
-    | and use the development copies of core files and plugins.
-    |
-    */
-
-    'edgeUpdates' => false,
-
-    /*
-    |--------------------------------------------------------------------------
     | Specifies the default CMS theme.
     |--------------------------------------------------------------------------
     |
@@ -28,14 +15,54 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Bleeding edge updates
+    |--------------------------------------------------------------------------
+    |
+    | If you are developing with October, it is important to have the latest
+    | code base. Set this value to 'true' to tell the platform to download
+    | and use the development copies of core files and plugins.
+    |
+    */
+
+    'edgeUpdates' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Back-end URI prefix
     |--------------------------------------------------------------------------
     |
-    | Specifies the URI prefix used for accessing back-end pages.
+    | Specifies the URL name used for accessing back-end pages.
+    | For example: backend -> http://localhost/backend
     |
     */
 
     'backendUri' => 'backend',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Back-end force HTTPS security
+    |--------------------------------------------------------------------------
+    |
+    | Use this setting to force a secure protocol when accessing any back-end
+    | pages, including the authentication pages. If set to null, this setting
+    | is enabled when debug mode (app.debug) is disabled.
+    |
+    */
+
+    'backendForceSecure' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Back-end timezone
+    |--------------------------------------------------------------------------
+    |
+    | This acts as the default setting for a back-end user's timezone. This can
+    | be changed by the user at any time using the backend preferences. All
+    | dates displayed in the back-end will be converted to this timezone.
+    |
+    */
+
+    'backendTimezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -154,6 +181,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Check import timestamps when combining assets
+    |--------------------------------------------------------------------------
+    |
+    | If deep hashing is enabled, the combiner cache will be reset when a change
+    | is detected on imported files, in addition to those referenced directly.
+    | This will cause slower page performance. If set to null, assets are
+    | minified, when debug mode (app.debug) is disabled.
+    |
+    */
+
+    'enableAssetDeepHashing' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Public plugins path
     |--------------------------------------------------------------------------
     |
@@ -252,6 +293,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Safe mode
+    |--------------------------------------------------------------------------
+    |
+    | If safe mode is enabled, the PHP code section is disabled in the CMS
+    | for security reasons. If set to null, safe mode is enabled when
+    | debug mode (app.debug) is disabled.
+    |
+    */
+
+    'enableSafeMode' => null,
+
+    /*
+    |--------------------------------------------------------------------------
     | Cross Site Request Forgery (CSRF) Protection
     |--------------------------------------------------------------------------
     |
@@ -262,4 +316,16 @@ return [
 
     'enableCsrfProtection' => false,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Force bytecode invalidation
+    |--------------------------------------------------------------------------
+    |
+    | When using OPcache with opcache.validate_timestamps set to 0 or APC
+    | with apc.stat set to 0 and Twig cache enabled, clearing the template
+    | cache won't update the cache, set to true to get around this.
+    |
+    */
+
+    'forceBytecodeInvalidation' => true,
 ];
